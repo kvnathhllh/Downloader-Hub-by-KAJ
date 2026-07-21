@@ -696,34 +696,30 @@
       button.innerHTML = "⏳ Sedang mengunduh...";
 
       try {
-        const response = await fetch(downloadUrl, { method: "GET", mode: "cors" });
-        if (!response.ok) throw new Error("CORS / Server issue");
+        const response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error("Gagal mengambil file via fetch");
 
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
+        
         const link = document.createElement("a");
         link.href = blobUrl;
         link.download = fileName;
-        link.style.display = "none";
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
 
-        setTimeout(() => {
-          if (document.body.contains(link)) document.body.removeChild(link);
-          URL.revokeObjectURL(blobUrl);
-        }, 2000);
-
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
         button.innerHTML = "✅ Download Dimulai";
       } catch (error) {
         const fallback = document.createElement("a");
         fallback.href = downloadUrl;
-        fallback.target = "_blank";
         fallback.download = fileName;
-        fallback.rel = "noopener noreferrer";
-        fallback.style.display = "none";
+        fallback.setAttribute("rel", "noopener noreferrer");
+        
         document.body.appendChild(fallback);
         fallback.click();
-
+        
         setTimeout(() => {
           if (document.body.contains(fallback)) document.body.removeChild(fallback);
         }, 1000);
