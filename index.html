@@ -696,15 +696,24 @@
       button.innerHTML = "⏳ Sedang mengunduh...";
 
       try {
-        const response = await fetch(downloadUrl);
-        if (!response.ok) throw new Error("Gagal mengambil file via fetch");
+        let response;
+        try {
+          // Percobaan 1: Unduh langsung jika diizinkan CORS
+          response = await fetch(downloadUrl);
+          if (!response.ok) throw new Error("Fetch direct gagal");
+        } catch (e) {
+          // Percobaan 2: Jika terblokir CORS (seperti YouTube), gunakan CORS Proxy agar dapat diubah jadi Blob
+          const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(downloadUrl)}`;
+          response = await fetch(proxyUrl);
+          if (!response.ok) throw new Error("Fetch via proxy gagal");
+        }
 
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
         
         const link = document.createElement("a");
         link.href = blobUrl;
-        link.download = fileName;
+        link.download = fileName; // Memaksa simpan file secara langsung tanpa buka tab baru
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -712,11 +721,10 @@
         setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
         button.innerHTML = "✅ Download Dimulai";
       } catch (error) {
+        // Fallback terakhir tanpa membuka tab baru (target _self)
         const fallback = document.createElement("a");
         fallback.href = downloadUrl;
         fallback.download = fileName;
-        fallback.setAttribute("rel", "noopener noreferrer");
-        
         document.body.appendChild(fallback);
         fallback.click();
         
