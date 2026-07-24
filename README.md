@@ -1,4 +1,3 @@
-
 # ⚡ Downloader Hub — by KAJ
 
 **Downloader Hub** adalah aplikasi web serbaguna (*All-in-One Downloader*) dengan antarmuka modern berdesain *glassmorphism*. Aplikasi ini memungkinkan pengguna untuk mengunduh media (video/audio) dari berbagai platform populer seperti TikTok, Instagram, YouTube, dan lainnya dengan cepat dan mudah.
@@ -45,8 +44,18 @@ Anda bebas mengubah nama file HTML ini sesuai kebutuhan:
  * Untuk mengubah API backend, buka script bagian bawah dan ubah variabel API_URL:
    ```javascript
    const API_URL = "[https://api.nexray.eu.cc/downloader/aio](https://api.nexray.eu.cc/downloader/aio)";
+ * Rename kode yang ada
+ * dll
    
-   ```
+
+## ⚠️ Aturan Pakai (Credit Requirement)
+
+Mau *rename* atau pakaikan ulang project ini? Silakan! Tapi ingat aturan mainnya:
+* ❌ **Dilarang keras** menghapus copyright / nama penulis asli.
+* ✅ **Wajib** mencantumkan link repositori original ini di file README kamu.
+
+*Hargai karya orang lain sebagaimana kamu mau karyamu dihargai.* 🤝
+
 ## 🌐 Panduan Deploy
 Aplikasi ini dapat dengan mudah dideploy ke berbagai layanan *static web hosting* gratis:
  1. **GitHub Pages:**
@@ -63,6 +72,3 @@ Created & Maintained by KAJ.
 ```
 > **Catatan:** Penggunaan API pihak ketiga tunduk pada kebijakan dan ketentuan dari penyedia layanan backend masing-masing.
 > 
-```
-
-```
