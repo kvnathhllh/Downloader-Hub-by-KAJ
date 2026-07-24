@@ -1,6 +1,6 @@
 # ⚡ Downloader Hub — by KAJ
 
-**Downloader Hub** adalah aplikasi web serbaguna (*All-in-One Downloader*) dengan antarmuka modern berdesain *glassmorphism*. Aplikasi ini memungkinkan pengguna untuk mengunduh media (video/audio) dari berbagai platform populer seperti TikTok, Instagram, YouTube, dan lainnya dengan cepat dan mudah.
+**Downloader Hub** adalah aplikasi web serbaguna (All-in-One Downloader) berdesain glassmorphism yang elegan. Solusi praktis untuk mengunduh beragam konten dari satu tempat—mulai dari media sosial (TikTok, Instagram, X, dsb), platform streaming (YouTube), musik (Spotify, SoundCloud, Apple Music, dsb), hingga platform cloud storage (MediaFire, Mega).
 
 ---
 
