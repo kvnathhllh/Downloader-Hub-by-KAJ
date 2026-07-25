@@ -607,7 +607,8 @@
     </section>
 
     <footer>
-      &copy; 2026 Downloader Hub • by KAJ
+      &copy; 2026 Downloader Hub. All rights reserved.
+Created & Maintained by KAJ.
     </footer>
   </div>
 
@@ -713,7 +714,7 @@
           URL.revokeObjectURL(blobUrl);
         }, 2000);
 
-        button.innerHTML = "✅ Download Dimulai";
+        button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
       } catch (error) {
         const fallback = document.createElement("a");
         fallback.href = downloadUrl;
@@ -728,7 +729,7 @@
           if (document.body.contains(fallback)) document.body.removeChild(fallback);
         }, 1000);
 
-        button.innerHTML = "⬇️ Download Dimulai";
+        button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
       }
 
       setTimeout(() => {
