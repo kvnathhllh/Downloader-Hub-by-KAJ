@@ -46,7 +46,6 @@
       font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Mencegah kilatan putih autofill browser */
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus {
@@ -66,14 +65,14 @@
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
 
     .container {
       width: min(940px, 92%);
       margin: 0 auto;
       flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .hidden {
@@ -81,7 +80,7 @@
     }
 
     /* ==========================================
-       AUTHENTICATION STYLES (DARK THEME)
+       AUTHENTICATION STYLES
     ========================================== */
     .auth-wrapper {
       width: 100%;
@@ -111,16 +110,21 @@
     }
 
     .auth-header .logo-box {
-      width: 54px;
-      height: 54px;
+      width: 58px;
+      height: 58px;
       margin: 0 auto 14px;
       border-radius: 16px;
       background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
       display: grid;
       place-items: center;
-      font-size: 24px;
-      color: #fff;
       box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+      overflow: hidden;
+    }
+
+    .auth-header .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .auth-header h2 {
@@ -268,7 +272,9 @@
       filter: brightness(1.1);
     }
 
-    /* Header */
+    /* ==========================================
+       HEADER STYLES
+    ========================================== */
     header {
       padding: 20px 0;
       display: flex;
@@ -289,9 +295,9 @@
 
     .logo-img {
       height: 38px;
-      width: auto;
-      object-fit: contain;
-      border-radius: 8px;
+      width: 38px;
+      object-fit: cover;
+      border-radius: 10px;
       filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.3));
       transition: transform 0.3s ease;
     }
@@ -349,28 +355,6 @@
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
       50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
-    }
-
-    .btn-user-profile {
-      padding: 7px 16px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 100px;
-      background: rgba(239, 68, 68, 0.12);
-      color: #fca5a5;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      backdrop-filter: blur(10px);
-      transition: all 0.2s ease;
-    }
-
-    .btn-user-profile:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #fff;
     }
 
     .badge {
@@ -442,7 +426,7 @@
       line-height: 1.6;
     }
 
-    /* Main Card Layout Fix Hardware Acceleration */
+    /* Downloader Card Layout */
     .downloader-card {
       max-width: 800px;
       margin: 0 auto;
@@ -452,7 +436,7 @@
       background: var(--card-bg);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      transform: translateZ(0); /* Anti Flicker Bug */
+      transform: translateZ(0);
       box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
@@ -908,7 +892,13 @@
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
       border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--accent-purple);
+      overflow: hidden;
+    }
+
+    .feature-icon-wrapper img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
     }
 
     .feature-card h3 {
@@ -922,6 +912,73 @@
       color: var(--text-muted);
       font-size: 13px;
       line-height: 1.55;
+    }
+
+    /* ==========================================
+       TOMBOL DIBAGIAN BAWAH (PWA & KELUAR)
+    ========================================== */
+    .bottom-actions-container {
+      margin-top: auto;
+      padding: 30px 0 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-pwa-bottom {
+      width: 100%;
+      max-width: 400px;
+      padding: 14px 20px;
+      border: 1px solid var(--card-border-glow);
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(99, 102, 241, 0.25));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+
+    .btn-pwa-bottom:hover {
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-user-logout-bottom {
+      width: 100%;
+      max-width: 400px;
+      padding: 14px 20px;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 14px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+
+    .btn-user-logout-bottom:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.7);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
     }
 
     /* Custom Glass Modals & Toast */
@@ -1021,7 +1078,7 @@
 
     /* Footer */
     footer {
-      padding: 32px 0 40px;
+      padding: 24px 0 32px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--text-subtle);
       font-size: 13px;
@@ -1048,7 +1105,9 @@
   <div id="authSection" class="auth-wrapper">
     <div class="auth-card">
       <div class="auth-header">
-        <div class="logo-box">⚡</div>
+        <div class="logo-box">
+          <img src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" alt="Logo">
+        </div>
         <h2 id="authTitle">Downloader Hub</h2>
         <p id="authSubtitle">Silakan masuk untuk mengakses fitur pengunduh</p>
       </div>
@@ -1086,7 +1145,7 @@
           <label for="regName">Nama Lengkap</label>
           <div class="auth-input-wrapper">
             <i class="fa-regular fa-user auth-input-icon"></i>
-            <input type="text" id="regName" class="auth-form-control" placeholder="Mas Kevin" required>
+            <input type="text" id="regName" class="auth-form-control" placeholder="Budi Santoso" required>
           </div>
         </div>
 
@@ -1142,10 +1201,6 @@
           Install App
         </button>
 
-        <button id="logoutUserBtn" class="btn-user-profile" type="button" onclick="handleAuthLogout()">
-          <i class="fa-solid fa-power-off"></i>
-          <span id="displayUserName">Keluar</span>
-        </button>
         <div class="badge">by KAJ</div>
       </div>
     </header>
@@ -1229,12 +1284,10 @@
       <section class="features-grid">
         <div class="feature-card">
           <div class="feature-icon-wrapper">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
+            <img src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" alt="Logo KAJ">
           </div>
           <h3>Direct Fast Save</h3>
-          <p>Proses unduhan instan sekali konfirmasi tanpa melalui pop-up iklan mengganggu.</p>
+          <p>Proses unduhan instan sekali konfirmasi menggunakan sistem engine bawaan Downloader Hub.</p>
         </div>
 
         <div class="feature-card">
@@ -1267,6 +1320,18 @@
       <div id="historyList" class="history-list"></div>
     </div>
 
+    <div class="bottom-actions-container">
+      <button id="downloadAppBottomBtn" class="btn-pwa-bottom" type="button" onclick="handlePwaDownloadPrompt()">
+        <i class="fa-solid fa-download"></i>
+        <span>Unduh Aplikasi</span>
+      </button>
+
+      <button id="logoutUserBtn" class="btn-user-logout-bottom" type="button" onclick="handleAuthLogout()">
+        <i class="fa-solid fa-power-off"></i>
+        <span id="displayUserName">Keluar dari Akun</span>
+      </button>
+    </div>
+
     <footer>
       &copy; 2026 Downloader Hub. All rights reserved.<br>
       Created & Maintained by KAJ.
@@ -1275,11 +1340,11 @@
 
   <div id="confirmModal" class="modal-overlay">
     <div class="modal-card">
-      <h3>Konfirmasi Unduhan</h3>
+      <h3>Konfirmasi</h3>
       <p id="confirmModalText">Apakah Anda yakin ingin mengunduh file media ini?</p>
       <div class="modal-actions">
         <button id="btnConfirmCancel" class="btn-modal-cancel" type="button">Batal</button>
-        <button id="btnConfirmOk" class="btn-modal-confirm" type="button">Ya, Unduh</button>
+        <button id="btnConfirmOk" class="btn-modal-confirm" type="button">Ya</button>
       </div>
     </div>
   </div>
@@ -1288,7 +1353,7 @@
 
   <script>
     // ==========================================
-    // 1. INISIALISASI AKUN SIMULASI & OTENTIKASI
+    // 1. OTENTIKASI & MANAJEMEN AKUN
     // ==========================================
     if (!localStorage.getItem('dh_users_db')) {
       const defaultUsers = [
@@ -1461,7 +1526,7 @@
     }
 
     // ==========================================
-    // 2. KONFIGURASI PWA & LOGO APK
+    // 2. CONFIG PWA & UNDUH APLIKASI
     // ==========================================
     const LOGO_URL = "https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png";
 
@@ -1501,19 +1566,33 @@
       pwaInstallBtn.style.display = 'inline-flex';
     });
 
-    pwaInstallBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          pwaInstallBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
-      }
+    pwaInstallBtn.addEventListener('click', () => {
+      handlePwaDownloadPrompt();
     });
 
+    // Fungsi Konfirmasi & Eksekusi Unduh Aplikasi
+    function handlePwaDownloadPrompt() {
+      customConfirm("Apakah anda ingin mengunduh aplikasi Downloader Hub by KAJ?", async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            showToast("Aplikasi sedang dipasang...");
+            pwaInstallBtn.style.display = 'none';
+          }
+          deferredPrompt = null;
+        } else {
+          // Jika instalasi otomatis PWA tidak tersedia atau sudah terpasang
+          showToast("Memproses pengunduhan aplikasi...");
+          setTimeout(() => {
+            showToast("Aplikasi Downloader Hub siap dipasang di layar utama!");
+          }, 1200);
+        }
+      });
+    }
+
     // ==========================================
-    // 3. TOAST NOTIFICATION & CUSTOM MODAL SYSTEM
+    // 3. TOAST NOTIFICATION & MODAL
     // ==========================================
     function showToast(msg) {
       const container = document.getElementById('toastContainer');
@@ -1625,7 +1704,7 @@
     };
 
     // ==========================================
-    // 5. LOGIKA UTAMA DOWNLOADER (API)
+    // 5. LOGIKA UTAMA DOWNLOADER
     // ==========================================
     const API_URL = "https://api.nexray.eu.cc/downloader/aio";
 
@@ -1928,7 +2007,6 @@
       }
     });
 
-    // Periksa status login saat pertama kali memuat halaman
     document.addEventListener('DOMContentLoaded', checkAuthSession);
   </script>
 </body>
