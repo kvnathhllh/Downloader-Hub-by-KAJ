@@ -16,14 +16,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     :root {
       --bg-dark: #07090e;
-      --card-bg: rgba(18, 24, 38, 0.75);
+      --card-bg: rgba(18, 24, 38, 0.7);
       --card-border: rgba(255, 255, 255, 0.08);
-      --card-border-glow: rgba(139, 92, 246, 0.4);
+      --card-border-glow: rgba(139, 92, 246, 0.3);
 
       --accent-purple: #8b5cf6;
       --accent-indigo: #6366f1;
@@ -35,7 +34,6 @@
 
       --success: #10b981;
       --danger: #ef4444;
-      --warning: #f59e0b;
       --radius: 20px;
     }
 
@@ -44,14 +42,6 @@
       padding: 0;
       box-sizing: border-box;
       font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus {
-      -webkit-text-fill-color: #ffffff;
-      -webkit-box-shadow: 0 0 0px 1000px #0d121f inset;
-      transition: background-color 5000s ease-in-out 0s;
     }
 
     body {
@@ -71,212 +61,11 @@
       width: min(940px, 92%);
       margin: 0 auto;
       flex: 1;
-      display: flex;
-      flex-direction: column;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    /* ==========================================
-       AUTHENTICATION STYLES
-    ========================================== */
-    .auth-wrapper {
-      width: 100%;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 440px;
-      padding: 32px;
-      border: 1px solid var(--card-border-glow);
-      border-radius: calc(var(--radius) + 6px);
-      background: rgba(18, 24, 38, 0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
-      animation: fadeIn 0.4s ease;
-    }
-
-    .auth-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .auth-header .logo-box {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 14px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      display: grid;
-      place-items: center;
-      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-      overflow: hidden;
-    }
-
-    .auth-header .logo-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .auth-header h2 {
-      font-size: 22px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.5px;
-    }
-
-    .auth-header p {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    .auth-tabs {
-      display: flex;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      margin-bottom: 24px;
-    }
-
-    .auth-tab-btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 9px;
-      transition: all 0.25s ease;
-    }
-
-    .auth-tab-btn.active {
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      color: white;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
-
-    .auth-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .auth-input-icon {
-      position: absolute;
-      left: 14px;
-      color: var(--text-subtle);
-      font-size: 14px;
-      pointer-events: none;
-    }
-
-    .auth-form-control {
-      width: 100%;
-      padding: 13px 40px 13px 42px;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.25s ease;
-    }
-
-    .auth-form-control:focus {
-      border-color: var(--accent-purple);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
-    }
-
-    .toggle-pw-icon {
-      position: absolute;
-      right: 14px;
-      color: var(--text-subtle);
-      cursor: pointer;
-      font-size: 14px;
-      transition: color 0.2s ease;
-    }
-
-    .toggle-pw-icon:hover {
-      color: white;
-    }
-
-    .pw-meter-bar {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-
-    .pw-meter-fill {
-      height: 100%;
-      width: 0%;
-      transition: all 0.3s ease;
-    }
-
-    .pw-hint-text {
-      font-size: 11px;
-      color: var(--text-subtle);
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .btn-auth-submit {
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-auth-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
-      filter: brightness(1.1);
-    }
-
-    /* ==========================================
-       HEADER STYLES
-    ========================================== */
+    /* Header */
     header {
-      padding: 20px 0;
+      padding: 24px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -290,14 +79,13 @@
       font-size: 20px;
       font-weight: 800;
       letter-spacing: -0.5px;
-      cursor: pointer;
     }
 
     .logo-img {
       height: 38px;
-      width: 38px;
-      object-fit: cover;
-      border-radius: 10px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
       filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.3));
       transition: transform 0.3s ease;
     }
@@ -329,8 +117,9 @@
       gap: 10px;
     }
 
+    /* Tombol Install PWA */
     .btn-install-pwa {
-      display: none;
+      display: none; /* Otomatis muncul jika PWA siap diinstal */
       align-items: center;
       gap: 6px;
       padding: 8px 16px;
@@ -365,50 +154,20 @@
       color: var(--text-muted);
       font-size: 12px;
       font-weight: 600;
-    }
-
-    /* Navigation Tabs */
-    .nav-tabs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-      margin-bottom: 25px;
-    }
-
-    .tab-btn {
-      padding: 10px 22px;
-      border-radius: 100px;
-      border: 1px solid var(--card-border);
-      background: rgba(18, 24, 38, 0.5);
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+      backdrop-filter: blur(10px);
     }
 
     /* Hero Section */
     .hero {
       text-align: center;
-      padding: 10px 0 20px;
+      padding: 30px 0 20px;
     }
 
     .hero h1 {
-      font-size: clamp(30px, 5vw, 50px);
+      font-size: clamp(32px, 5vw, 52px);
       line-height: 1.15;
       letter-spacing: -1.2px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       font-weight: 800;
     }
 
@@ -420,30 +179,28 @@
 
     .hero p {
       max-width: 540px;
-      margin: 0 auto 28px;
+      margin: 0 auto 32px;
       color: var(--text-muted);
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.6;
     }
 
-    /* Downloader Card Layout */
+    /* Main Downloader Card */
     .downloader-card {
       max-width: 800px;
       margin: 0 auto;
-      padding: 18px;
+      padding: 16px;
       border: 1px solid var(--card-border);
       border-radius: calc(var(--radius) + 6px);
       background: var(--card-bg);
       backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      transform: translateZ(0);
       box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .downloader-card:focus-within {
       border-color: var(--card-border-glow);
-      box-shadow: 0 20px 60px rgba(139, 92, 246, 0.2);
+      box-shadow: 0 25px 80px rgba(139, 92, 246, 0.15);
     }
 
     .input-box {
@@ -553,17 +310,17 @@
       filter: brightness(1.1);
     }
 
-    /* Status Box */
+    /* Loading Box */
     .status-box {
       display: none;
-      padding: 30px 20px;
+      padding: 40px 20px;
       text-align: center;
     }
 
     .spinner {
-      width: 34px;
-      height: 34px;
-      margin: 0 auto 14px;
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 16px;
       border: 3px solid rgba(255, 255, 255, 0.08);
       border-top-color: var(--accent-purple);
       border-radius: 50%;
@@ -606,7 +363,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -734,127 +491,6 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* History View Panel */
-    .history-card {
-      display: none;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 24px;
-      border: 1px solid var(--card-border);
-      border-radius: calc(var(--radius) + 6px);
-      background: var(--card-bg);
-      backdrop-filter: blur(24px);
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .history-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .btn-clear-history {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-clear-history:hover {
-      background: rgba(239, 68, 68, 0.3);
-    }
-
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 450px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .history-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .history-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      overflow: hidden;
-    }
-
-    .history-thumb {
-      width: 46px;
-      height: 46px;
-      border-radius: 10px;
-      object-fit: cover;
-      background: #000;
-      flex-shrink: 0;
-    }
-
-    .history-details {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow: hidden;
-    }
-
-    .history-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .history-time {
-      font-size: 11px;
-      color: var(--text-subtle);
-    }
-
-    .history-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .btn-hist-action {
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-hist-action:hover {
-      background: rgba(255, 255, 255, 0.18);
-    }
-
     /* Features Section */
     .features-grid {
       display: grid;
@@ -892,13 +528,7 @@
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
       border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden;
-    }
-
-    .feature-icon-wrapper img {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
+      color: var(--accent-purple);
     }
 
     .feature-card h3 {
@@ -914,171 +544,9 @@
       line-height: 1.55;
     }
 
-    /* ==========================================
-       TOMBOL DIBAGIAN BAWAH (PWA & KELUAR)
-    ========================================== */
-    .bottom-actions-container {
-      margin-top: auto;
-      padding: 30px 0 10px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-    }
-
-    .btn-pwa-bottom {
-      width: 100%;
-      max-width: 400px;
-      padding: 14px 20px;
-      border: 1px solid var(--card-border-glow);
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(99, 102, 241, 0.25));
-      color: #fff;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
-    }
-
-    .btn-pwa-bottom:hover {
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-    }
-
-    .btn-user-logout-bottom {
-      width: 100%;
-      max-width: 400px;
-      padding: 14px 20px;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 14px;
-      background: rgba(239, 68, 68, 0.12);
-      color: #fca5a5;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-    }
-
-    .btn-user-logout-bottom:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: rgba(239, 68, 68, 0.7);
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
-    }
-
-    /* Custom Glass Modals & Toast */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      padding: 20px;
-      animation: fadeIn 0.25s ease;
-    }
-
-    .modal-card {
-      width: min(420px, 100%);
-      background: rgba(18, 24, 38, 0.95);
-      border: 1px solid var(--card-border-glow);
-      border-radius: 22px;
-      padding: 28px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-      text-align: center;
-    }
-
-    .modal-card h3 {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .modal-card p {
-      color: var(--text-muted);
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-modal-cancel {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-modal-confirm {
-      flex: 1;
-      padding: 12px;
-      border-radius: 12px;
-      border: 0;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* Toast Notification */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toast {
-      padding: 14px 20px;
-      border-radius: 14px;
-      background: rgba(18, 24, 38, 0.95);
-      border: 1px solid var(--accent-purple);
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
     /* Footer */
     footer {
-      padding: 24px 0 32px;
+      padding: 32px 0 40px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--text-subtle);
       font-size: 13px;
@@ -1088,102 +556,55 @@
 
     /* Mobile Responsive */
     @media (max-width: 768px) {
-      .hero { padding-top: 10px; }
-      .input-box { flex-direction: column; padding: 0; border: 0; background: transparent; }
-      .input-wrapper { width: 100%; }
-      .input-box input { padding: 16px 40px 16px 46px; border: 1px solid var(--card-border); border-radius: 14px; background: rgba(0, 0, 0, 0.5); }
-      .clear-btn { top: 16px; right: 14px; }
-      .btn { height: 50px; border-radius: 14px; width: 100%; }
-      .features-grid { grid-template-columns: 1fr; gap: 16px; }
-      .feature-card { padding: 20px; }
-      .toast-container { left: 20px; right: 20px; bottom: 20px; }
+      .hero {
+        padding-top: 15px;
+      }
+
+      .input-box {
+        flex-direction: column;
+        padding: 0;
+        border: 0;
+        background: transparent;
+      }
+
+      .input-wrapper {
+        width: 100%;
+      }
+
+      .input-box input {
+        padding: 16px 40px 16px 46px;
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .clear-btn {
+        top: 16px;
+        right: 14px;
+      }
+
+      .btn {
+        height: 50px;
+        border-radius: 14px;
+        width: 100%;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .feature-card {
+        padding: 20px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div id="authSection" class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="logo-box">
-          <img src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" alt="Logo">
-        </div>
-        <h2 id="authTitle">Downloader Hub</h2>
-        <p id="authSubtitle">Silakan masuk untuk mengakses fitur pengunduh</p>
-      </div>
-
-      <div class="auth-tabs">
-        <button id="authTabLogin" class="auth-tab-btn active" onclick="switchAuthTab('login')">Masuk</button>
-        <button id="authTabRegister" class="auth-tab-btn" onclick="switchAuthTab('register')">Daftar Akun</button>
-      </div>
-
-      <form id="authLoginForm" onsubmit="handleAuthLogin(event)">
-        <div class="form-group">
-          <label for="loginEmail">Email / Username</label>
-          <div class="auth-input-wrapper">
-            <i class="fa-regular fa-envelope auth-input-icon"></i>
-            <input type="email" id="loginEmail" class="auth-form-control" placeholder="nama@email.com" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="loginPassword">Kata Sandi</label>
-          <div class="auth-input-wrapper">
-            <i class="fa-solid fa-lock auth-input-icon"></i>
-            <input type="password" id="loginPassword" class="auth-form-control" placeholder="••••••••" required>
-            <i class="fa-regular fa-eye toggle-pw-icon" onclick="togglePasswordVisibility('loginPassword', this)"></i>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-auth-submit">
-          <i class="fa-solid fa-right-to-bracket"></i> Masuk Ke Aplikasi
-        </button>
-      </form>
-
-      <form id="authRegisterForm" class="hidden" onsubmit="handleAuthRegister(event)">
-        <div class="form-group">
-          <label for="regName">Nama Lengkap</label>
-          <div class="auth-input-wrapper">
-            <i class="fa-regular fa-user auth-input-icon"></i>
-            <input type="text" id="regName" class="auth-form-control" placeholder="Budi Santoso" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="regEmail">Email Unik (Pengenal Akun)</label>
-          <div class="auth-input-wrapper">
-            <i class="fa-regular fa-envelope auth-input-icon"></i>
-            <input type="email" id="regEmail" class="auth-form-control" placeholder="nama@email.com" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="regPassword">Buat Kata Sandi</label>
-          <div class="auth-input-wrapper">
-            <i class="fa-solid fa-lock auth-input-icon"></i>
-            <input type="password" id="regPassword" class="auth-form-control" placeholder="Minimal 8 Karakter" oninput="checkPwStrength(this.value)" required>
-            <i class="fa-regular fa-eye toggle-pw-icon" onclick="togglePasswordVisibility('regPassword', this)"></i>
-          </div>
-          <div class="pw-meter-bar">
-            <div class="pw-meter-fill" id="pwBar"></div>
-          </div>
-          <div class="pw-hint-text">
-            <span>Kekuatan: <strong id="pwLabel" style="color:var(--text-muted);">-</strong></span>
-            <span>Min 8 Karakter + Kombinasi</span>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-auth-submit">
-          <i class="fa-solid fa-user-plus"></i> Buat Akun Baru
-        </button>
-      </form>
-    </div>
-  </div>
-
-
-  <div id="mainAppSection" class="container hidden">
+  <div class="container">
     <header>
-      <div class="logo" id="logoBtn">
+      <div class="logo">
         <img 
           src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" 
           alt="KAJ Logo" 
@@ -1200,137 +621,105 @@
           </svg>
           Install App
         </button>
-
         <div class="badge">by KAJ</div>
       </div>
     </header>
 
-    <div class="nav-tabs">
-      <button id="tabDownloader" class="tab-btn active" type="button">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        Downloader
-      </button>
-      <button id="tabHistory" class="tab-btn" type="button">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Riwayat
-      </button>
-    </div>
+    <section class="hero">
+      <h1>Unduh Media Apapun.<br><span class="gradient-text">Instant & Tanpa Batas.</span></h1>
+      <p>Tempel tautan video atau audio pilihan Anda di bawah ini untuk mulai mengunduh.</p>
 
-    <div id="downloaderSection">
-      <section class="hero">
-        <h1>Unduh Media Apapun.<br><span class="gradient-text">Instant & Tanpa Batas.</span></h1>
-        <p>Tempel tautan video atau audio pilihan Anda di bawah ini untuk mulai mengunduh.</p>
-
-        <div class="downloader-card">
-          <div class="input-box">
-            <div class="input-wrapper">
-              <div class="input-icon">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                </svg>
-              </div>
-              <input
-                id="urlInput"
-                type="url"
-                placeholder="Tempel URL media di sini (TikTok, IG, YT, dll)..."
-                autocomplete="off"
-              >
-              <button id="clearBtn" class="clear-btn" type="button" aria-label="Hapus Teks">✕</button>
-            </div>
-            <button id="pasteBtn" class="btn btn-paste" type="button">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              Tempel
-            </button>
-            <button id="downloadBtn" class="btn btn-download" type="button">
+      <div class="downloader-card">
+        <div class="input-box">
+          <div class="input-wrapper">
+            <div class="input-icon">
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
               </svg>
-              Unduh
-            </button>
+            </div>
+            <input
+              id="urlInput"
+              type="url"
+              placeholder="Tempel URL media di sini (TikTok, IG, YT, dll)..."
+              autocomplete="off"
+            >
+            <button id="clearBtn" class="clear-btn" type="button" aria-label="Hapus Teks">✕</button>
           </div>
+          <button id="pasteBtn" class="btn btn-paste" type="button">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Tempel
+          </button>
+          <button id="downloadBtn" class="btn btn-download" type="button">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Unduh
+          </button>
+        </div>
 
-          <div id="statusBox" class="status-box">
-            <div class="spinner"></div>
-            <div id="statusText" class="status-text">Sedang mengekstrak media...</div>
-          </div>
+        <div id="statusBox" class="status-box">
+          <div class="spinner"></div>
+          <div id="statusText" class="status-text">Sedang mengekstrak media...</div>
+        </div>
 
-          <div id="errorBox" class="error-box"></div>
+        <div id="errorBox" class="error-box"></div>
 
-          <div id="resultCard" class="result-card">
-            <div class="result-content">
-              <div id="previewWrapper" class="preview-wrapper"></div>
-              <div class="result-details">
-                <div>
-                  <h2 id="resultTitle" class="media-title">Judul Media</h2>
-                  <div id="mediaAuthor" class="media-author">
-                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span id="authorText">Sumber Publik</span>
-                  </div>
+        <div id="resultCard" class="result-card">
+          <div class="result-content">
+            <div id="previewWrapper" class="preview-wrapper"></div>
+            <div class="result-details">
+              <div>
+                <h2 id="resultTitle" class="media-title">Judul Media</h2>
+                <div id="mediaAuthor" class="media-author">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span id="authorText">Sumber Publik</span>
                 </div>
-                <div>
-                  <div class="format-section-title">PILIH OPSI UNDUHAN</div>
-                  <div id="formatsGrid" class="formats-grid"></div>
-                </div>
+              </div>
+              <div>
+                <div class="format-section-title">PILIH OPSI UNDUHAN</div>
+                <div id="formatsGrid" class="formats-grid"></div>
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      <section class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">
-            <img src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" alt="Logo KAJ">
-          </div>
-          <h3>Direct Fast Save</h3>
-          <p>Proses unduhan instan sekali konfirmasi menggunakan sistem engine bawaan Downloader Hub.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-            </svg>
-          </div>
-          <h3>Salin Direct Link</h3>
-          <p>Dapatkan link unduhan langsung yang dapat digunakan pada IDM, ADM, atau downloader eksternal.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </div>
-          <h3>Pratinjau Jelas</h3>
-          <p>Lihat gambar thumbnail atau media sebelum memilih format audio atau video yang akan diunduh.</p>
-        </div>
-      </section>
-    </div>
-
-    <div id="historySection" class="history-card">
-      <div class="history-header">
-        <h2>Riwayat Unduhan</h2>
-        <button id="clearHistoryBtn" class="btn-clear-history" type="button">Hapus Semua</button>
       </div>
-      <div id="historyList" class="history-list"></div>
-    </div>
+    </section>
 
-    <div class="bottom-actions-container">
-      <button id="downloadAppBottomBtn" class="btn-pwa-bottom" type="button" onclick="handlePwaDownloadPrompt()">
-        <i class="fa-solid fa-download"></i>
-        <span>Unduh Aplikasi</span>
-      </button>
+    <section class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <h3>Direct Fast Save</h3>
+        <p>Proses unduhan instan sekali konfirmasi tanpa melalui pop-up iklan mengganggu.</p>
+      </div>
 
-      <button id="logoutUserBtn" class="btn-user-logout-bottom" type="button" onclick="handleAuthLogout()">
-        <i class="fa-solid fa-power-off"></i>
-        <span id="displayUserName">Keluar dari Akun</span>
-      </button>
-    </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+          </svg>
+        </div>
+        <h3>Salin Direct Link</h3>
+        <p>Dapatkan link unduhan langsung yang dapat digunakan pada IDM, ADM, atau downloader eksternal.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrapper">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3>Pratinjau Jelas</h3>
+        <p>Lihat gambar thumbnail atau media sebelum memilih format audio atau video yang akan diunduh.</p>
+      </div>
+    </section>
 
     <footer>
       &copy; 2026 Downloader Hub. All rights reserved.<br>
@@ -1338,198 +727,13 @@
     </footer>
   </div>
 
-  <div id="confirmModal" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Konfirmasi</h3>
-      <p id="confirmModalText">Apakah Anda yakin ingin mengunduh file media ini?</p>
-      <div class="modal-actions">
-        <button id="btnConfirmCancel" class="btn-modal-cancel" type="button">Batal</button>
-        <button id="btnConfirmOk" class="btn-modal-confirm" type="button">Ya</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastContainer" class="toast-container"></div>
-
   <script>
     // ==========================================
-    // 1. OTENTIKASI & MANAJEMEN AKUN
-    // ==========================================
-    if (!localStorage.getItem('dh_users_db')) {
-      const defaultUsers = [
-        {
-          name: 'Demo User',
-          email: 'admin@demo.com',
-          passwordHash: simpleHash('admin12345'),
-          createdAt: new Date().toISOString()
-        }
-      ];
-      localStorage.setItem('dh_users_db', JSON.stringify(defaultUsers));
-    }
-
-    function simpleHash(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) - hash + str.charCodeAt(i);
-        hash |= 0;
-      }
-      return hash.toString(16);
-    }
-
-    function checkAuthSession() {
-      const activeSession = JSON.parse(localStorage.getItem('dh_active_session'));
-      const authSection = document.getElementById('authSection');
-      const mainAppSection = document.getElementById('mainAppSection');
-
-      if (activeSession) {
-        authSection.classList.add('hidden');
-        mainAppSection.classList.remove('hidden');
-        document.getElementById('displayUserName').textContent = `Keluar (${activeSession.name.split(' ')[0]})`;
-      } else {
-        authSection.classList.remove('hidden');
-        mainAppSection.classList.add('hidden');
-      }
-    }
-
-    function switchAuthTab(tab) {
-      const loginForm = document.getElementById('authLoginForm');
-      const registerForm = document.getElementById('authRegisterForm');
-      const tabLogin = document.getElementById('authTabLogin');
-      const tabRegister = document.getElementById('authTabRegister');
-      const title = document.getElementById('authTitle');
-      const subtitle = document.getElementById('authSubtitle');
-
-      if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        title.innerText = "Selamat Datang Kembali";
-        subtitle.innerText = "Masukkan email dan password untuk mengakses Downloader Hub";
-      } else {
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
-        tabLogin.classList.remove('active');
-        tabRegister.classList.add('active');
-        title.innerText = "Buat Akun Baru";
-        subtitle.innerText = "Gunakan email unik dan kata sandi minimal 8 karakter";
-      }
-    }
-
-    function togglePasswordVisibility(inputId, iconElem) {
-      const input = document.getElementById(inputId);
-      if (input.type === 'password') {
-        input.type = 'text';
-        iconElem.classList.replace('fa-eye', 'fa-eye-slash');
-      } else {
-        input.type = 'password';
-        iconElem.classList.replace('fa-eye-slash', 'fa-eye');
-      }
-    }
-
-    function checkPwStrength(password) {
-      const bar = document.getElementById('pwBar');
-      const label = document.getElementById('pwLabel');
-
-      let score = 0;
-      if (password.length >= 8) score++;
-      if (/[0-9]/.test(password)) score++;
-      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-      if (/[^A-Za-z0-9]/.test(password)) score++;
-
-      if (password.length === 0) {
-        bar.style.width = '0%';
-        label.innerText = '-';
-        label.style.color = 'var(--text-muted)';
-      } else if (score <= 1) {
-        bar.style.width = '33%';
-        bar.style.background = 'var(--danger)';
-        label.innerText = 'Lemah';
-        label.style.color = 'var(--danger)';
-      } else if (score === 2 || score === 3) {
-        bar.style.width = '66%';
-        bar.style.background = 'var(--warning)';
-        label.innerText = 'Sedang';
-        label.style.color = 'var(--warning)';
-      } else {
-        bar.style.width = '100%';
-        bar.style.background = 'var(--success)';
-        label.innerText = 'Kuat';
-        label.style.color = 'var(--success)';
-      }
-    }
-
-    function handleAuthRegister(e) {
-      e.preventDefault();
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const password = document.getElementById('regPassword').value;
-
-      if (password.length < 8) {
-        showToast('Kata sandi minimal harus 8 karakter!');
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('dh_users_db')) || [];
-
-      if (users.some(u => u.email === email)) {
-        showToast('Email sudah terdaftar! Gunakan email lain.');
-        return;
-      }
-
-      const newUser = {
-        name: name,
-        email: email,
-        passwordHash: simpleHash(password),
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(newUser);
-      localStorage.setItem('dh_users_db', JSON.stringify(users));
-
-      showToast('Akun berhasil dibuat! Silakan masuk.');
-      document.getElementById('authRegisterForm').reset();
-      checkPwStrength('');
-      switchAuthTab('login');
-    }
-
-    function handleAuthLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
-
-      const users = JSON.parse(localStorage.getItem('dh_users_db')) || [];
-      const user = users.find(u => u.email === email);
-
-      if (!user) {
-        showToast('Email tidak terdaftar!');
-        return;
-      }
-
-      if (user.passwordHash !== simpleHash(password)) {
-        showToast('Kata sandi salah!');
-        return;
-      }
-
-      const sessionData = { name: user.name, email: user.email };
-      localStorage.setItem('dh_active_session', JSON.stringify(sessionData));
-
-      showToast(`Selamat datang, ${user.name}!`);
-      document.getElementById('authLoginForm').reset();
-      checkAuthSession();
-    }
-
-    function handleAuthLogout() {
-      localStorage.removeItem('dh_active_session');
-      showToast('Anda telah keluar dari aplikasi.');
-      checkAuthSession();
-    }
-
-    // ==========================================
-    // 2. CONFIG PWA & UNDUH APLIKASI
+    // 1. REGISTRASI KONFIGURASI PWA & LOGO APK
     // ==========================================
     const LOGO_URL = "https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png";
 
+    // Membuat Web App Manifest secara dinamis
     const pwaManifest = {
       "name": "Downloader Hub by KAJ",
       "short_name": "DownloaderHub",
@@ -1539,14 +743,25 @@
       "background_color": "#07090e",
       "theme_color": "#8b5cf6",
       "icons": [
-        { "src": LOGO_URL, "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-        { "src": LOGO_URL, "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+        {
+          "src": LOGO_URL,
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": LOGO_URL,
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
       ]
     };
 
     const manifestBlob = new Blob([JSON.stringify(pwaManifest)], { type: 'application/json' });
     document.getElementById('manifestLink').setAttribute('href', URL.createObjectURL(manifestBlob));
 
+    // Registrasi Service Worker ringan untuk dukungan PWA
     if ('serviceWorker' in navigator) {
       const swCode = `
         self.addEventListener('install', (e) => self.skipWaiting());
@@ -1557,154 +772,35 @@
       navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
     }
 
+    // Logika Pengendali Pop-up Install PWA
     let deferredPrompt;
     const pwaInstallBtn = document.getElementById('pwaInstallBtn');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      pwaInstallBtn.style.display = 'inline-flex';
+      pwaInstallBtn.style.display = 'inline-flex'; // Menampilkan tombol install
     });
 
-    pwaInstallBtn.addEventListener('click', () => {
-      handlePwaDownloadPrompt();
-    });
-
-    // Fungsi Konfirmasi & Eksekusi Unduh Aplikasi
-    function handlePwaDownloadPrompt() {
-      customConfirm("Apakah anda ingin mengunduh aplikasi Downloader Hub by KAJ?", async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            showToast("Aplikasi sedang dipasang...");
-            pwaInstallBtn.style.display = 'none';
-          }
-          deferredPrompt = null;
-        } else {
-          // Jika instalasi otomatis PWA tidak tersedia atau sudah terpasang
-          showToast("Memproses pengunduhan aplikasi...");
-          setTimeout(() => {
-            showToast("Aplikasi Downloader Hub siap dipasang di layar utama!");
-          }, 1200);
+    pwaInstallBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          pwaInstallBtn.style.display = 'none';
         }
-      });
-    }
-
-    // ==========================================
-    // 3. TOAST NOTIFICATION & MODAL
-    // ==========================================
-    function showToast(msg) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerHTML = `<span>✨</span> <span>${msg}</span>`;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    let confirmCallback = null;
-    const confirmModal = document.getElementById('confirmModal');
-    const confirmModalText = document.getElementById('confirmModalText');
-
-    function customConfirm(message, onConfirm) {
-      confirmModalText.textContent = message;
-      confirmCallback = onConfirm;
-      confirmModal.style.display = 'flex';
-    }
-
-    document.getElementById('btnConfirmCancel').onclick = () => {
-      confirmModal.style.display = 'none';
-      confirmCallback = null;
-    };
-
-    document.getElementById('btnConfirmOk').onclick = () => {
-      confirmModal.style.display = 'none';
-      if (confirmCallback) confirmCallback();
-      confirmCallback = null;
-    };
-
-    // ==========================================
-    // 4. RIWAYAT UNDUHAN (HISTORY)
-    // ==========================================
-    const tabDownloader = document.getElementById('tabDownloader');
-    const tabHistory = document.getElementById('tabHistory');
-    const downloaderSection = document.getElementById('downloaderSection');
-    const historySection = document.getElementById('historySection');
-    const historyList = document.getElementById('historyList');
-
-    tabDownloader.onclick = () => {
-      tabDownloader.classList.add('active');
-      tabHistory.classList.remove('active');
-      downloaderSection.style.display = 'block';
-      historySection.style.display = 'none';
-    };
-
-    tabHistory.onclick = () => {
-      tabHistory.classList.add('active');
-      tabDownloader.classList.remove('active');
-      downloaderSection.style.display = 'none';
-      historySection.style.display = 'block';
-      renderHistory();
-    };
-
-    function saveToHistory(item) {
-      let list = JSON.parse(localStorage.getItem('dh_history') || '[]');
-      list.unshift({
-        title: item.title,
-        url: item.url,
-        thumb: item.thumb,
-        date: new Date().toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' })
-      });
-      if (list.length > 20) list.pop();
-      localStorage.setItem('dh_history', JSON.stringify(list));
-    }
-
-    function renderHistory() {
-      let list = JSON.parse(localStorage.getItem('dh_history') || '[]');
-      if (list.length === 0) {
-        historyList.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:30px;font-size:13px;">Belum ada riwayat unduhan</div>`;
-        return;
+        deferredPrompt = null;
       }
+    });
 
-      historyList.innerHTML = list.map((item) => `
-        <div class="history-item">
-          <div class="history-info">
-            <img src="${item.thumb || LOGO_URL}" class="history-thumb" alt="Thumb" onerror="this.src='${LOGO_URL}'">
-            <div class="history-details">
-              <div class="history-title">${item.title || 'Media Download'}</div>
-              <div class="history-time">${item.date}</div>
-            </div>
-          </div>
-          <div class="history-actions">
-            <button class="btn-hist-action" onclick="loadHistoryUrl('${encodeURIComponent(item.url)}')">Buka</button>
-          </div>
-        </div>
-      `).join('');
-    }
+    window.addEventListener('appinstalled', () => {
+      pwaInstallBtn.style.display = 'none';
+      deferredPrompt = null;
+    });
 
-    document.getElementById('clearHistoryBtn').onclick = () => {
-      customConfirm("Hapus semua riwayat unduhan?", () => {
-        localStorage.removeItem('dh_history');
-        renderHistory();
-        showToast("Riwayat telah dibersihkan.");
-      });
-    };
-
-    window.loadHistoryUrl = (encodedUrl) => {
-      const decoded = decodeURIComponent(encodedUrl);
-      urlInput.value = decoded;
-      clearBtn.style.display = 'flex';
-      tabDownloader.click();
-      startDownload();
-    };
 
     // ==========================================
-    // 5. LOGIKA UTAMA DOWNLOADER
+    // 2. LOGIKA UTAMA DOWNLOADER
     // ==========================================
     const API_URL = "https://api.nexray.eu.cc/downloader/aio";
 
@@ -1747,7 +843,6 @@
           urlInput.value = text.trim();
           clearBtn.style.display = "flex";
           urlInput.focus();
-          showToast("Link berhasil ditempel!");
         } else {
           showError("⚠️ Papan klip Anda kosong. Silakan salin tautan media terlebih dahulu.");
         }
@@ -1782,55 +877,54 @@
         : `<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Unduh`;
     }
 
-    function directDownloadFile(downloadUrl, fileName, button, fileType) {
-      customConfirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`, async () => {
-        const originalHTML = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = `⏳ Mengunduh...`;
+    async function directDownloadFile(downloadUrl, fileName, button, fileType) {
+      const confirmed = confirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`);
+      if (!confirmed) return;
 
-        try {
-          const response = await fetch(downloadUrl, { method: "GET", mode: "cors" });
-          if (!response.ok) throw new Error("CORS / Server issue");
+      const originalHTML = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = `⏳ Mengunduh...`;
 
-          const blob = await response.blob();
-          const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = blobUrl;
-          link.download = fileName;
-          link.style.display = "none";
-          document.body.appendChild(link);
-          link.click();
+      try {
+        const response = await fetch(downloadUrl, { method: "GET", mode: "cors" });
+        if (!response.ok) throw new Error("CORS / Server issue");
 
-          setTimeout(() => {
-            if (document.body.contains(link)) document.body.removeChild(link);
-            URL.revokeObjectURL(blobUrl);
-          }, 2000);
-
-          button.innerHTML = "✓ File Berhasil Diunduh";
-          showToast("Unduhan dimulai!");
-        } catch (error) {
-          const fallback = document.createElement("a");
-          fallback.href = downloadUrl;
-          fallback.target = "_blank";
-          fallback.download = fileName;
-          fallback.rel = "noopener noreferrer";
-          fallback.style.display = "none";
-          document.body.appendChild(fallback);
-          fallback.click();
-
-          setTimeout(() => {
-            if (document.body.contains(fallback)) document.body.removeChild(fallback);
-          }, 1000);
-
-          button.innerHTML = "✓ Membuka Direct Link";
-          showToast("Membuka link unduhan langsung!");
-        }
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = fileName;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
 
         setTimeout(() => {
-          button.innerHTML = originalHTML;
-          button.disabled = false;
-        }, 3500);
-      });
+          if (document.body.contains(link)) document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+        }, 2000);
+
+        button.innerHTML = "✓ File Berhasil Diunduh";
+      } catch (error) {
+        const fallback = document.createElement("a");
+        fallback.href = downloadUrl;
+        fallback.target = "_blank";
+        fallback.download = fileName;
+        fallback.rel = "noopener noreferrer";
+        fallback.style.display = "none";
+        document.body.appendChild(fallback);
+        fallback.click();
+
+        setTimeout(() => {
+          if (document.body.contains(fallback)) document.body.removeChild(fallback);
+        }, 1000);
+
+        button.innerHTML = "✓ Membuka Unduhan Direct";
+      }
+
+      setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+      }, 3500);
     }
 
     async function startDownload() {
@@ -1865,7 +959,7 @@
           throw new Error(data.message || "Media tidak ditemukan atau tautan tidak didukung.");
         }
 
-        displayResult(payload, url);
+        displayResult(payload);
       } catch (error) {
         console.error("API Error:", error);
         showError(error.message || "Terjadi kesalahan saat mengekstrak media.");
@@ -1874,7 +968,7 @@
       }
     }
 
-    function displayResult(data, originalUrl) {
+    function displayResult(data) {
       previewWrapper.innerHTML = "";
       formatsGrid.innerHTML = "";
 
@@ -1882,10 +976,15 @@
       resultTitle.textContent = title;
       authorText.textContent = data.author || data.uploader || "Sumber Publik";
 
+      let mediaList = [];
+      if (Array.isArray(data.formats)) mediaList = data.formats;
+      else if (Array.isArray(data.medias)) mediaList = data.medias;
+      else if (Array.isArray(data.downloads)) mediaList = data.downloads;
+      else if (data.url || data.link) {
+        mediaList = [{ url: data.url || data.link, quality: "1080p", ext: "mp4" }];
+      }
+
       const thumbnail = data.thumbnail || data.thumb || data.cover || data.image;
-
-      saveToHistory({ title: title, url: originalUrl, thumb: thumbnail });
-
       if (thumbnail) {
         const image = document.createElement("img");
         image.className = "preview-media";
@@ -1894,14 +993,6 @@
         previewWrapper.appendChild(image);
       } else {
         previewWrapper.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:30px;">Pratinjau tidak tersedia</div>`;
-      }
-
-      let mediaList = [];
-      if (Array.isArray(data.formats)) mediaList = data.formats;
-      else if (Array.isArray(data.medias)) mediaList = data.medias;
-      else if (Array.isArray(data.downloads)) mediaList = data.downloads;
-      else if (data.url || data.link) {
-        mediaList = [{ url: data.url || data.link, quality: "1080p", ext: "mp4" }];
       }
 
       let hasHD = false;
@@ -1967,7 +1058,6 @@
         copyButton.onclick = async () => {
           try {
             await navigator.clipboard.writeText(downloadUrl);
-            showToast("Direct link tersalin!");
             copyButton.innerHTML = `
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--success)">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
@@ -1976,12 +1066,12 @@
             setTimeout(() => {
               copyButton.innerHTML = `
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
               `;
             }, 1800);
           } catch {
-            showError("Gagal menyalin tautan.");
+            alert("Gagal menyalin tautan.");
           }
         };
 
@@ -2006,8 +1096,6 @@
         startDownload();
       }
     });
-
-    document.addEventListener('DOMContentLoaded', checkAuthSession);
   </script>
 </body>
 </html>
