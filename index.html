@@ -3,563 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Downloader Hub — by KAJ</title>
-  
-  <meta name="theme-color" content="#07090e">
+  <title>Downloader Hub by KAJ</title>
+
+  <meta name="description" content="Downloader Hub — aplikasi web All-in-One Downloader. Unduh video, foto, dan audio dari TikTok, Instagram, X, YouTube, Spotify, SoundCloud, Apple Music, MediaFire, dan Mega dari satu tempat.">
+  <meta name="theme-color" content="#0b0d10">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Downloader Hub by KAJ">
   <link rel="apple-touch-icon" href="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png">
+  <link rel="icon" href="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png">
+  <link rel="manifest" href="manifest.json">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-dark: #07090e;
-      --card-bg: rgba(18, 24, 38, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-border-glow: rgba(139, 92, 246, 0.3);
+      --ink: #0b0d10;
+      --panel: #15181d;
+      --panel-raised: #1b1f26;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.18);
 
-      --accent-purple: #8b5cf6;
-      --accent-indigo: #6366f1;
-      --accent-pink: #ec4899;
+      --text-main: #f2f3f5;
+      --text-muted: #9aa0ab;
+      --text-subtle: #5b6270;
 
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-subtle: #64748b;
+      --signal: #2f6fed;
+      --signal-mint: #17c79a;
+      --success: #17c79a;
+      --danger: #f0533d;
 
-      --success: #10b981;
-      --danger: #ef4444;
-      --radius: 20px;
+      --font-display: "Space Grotesk", sans-serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+      --radius-sm: 8px;
+      --radius: 14px;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-tap-highlight-color: transparent; }
 
     body {
       min-height: 100vh;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.18) 0%, transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.15) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+      background-color: var(--ink);
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(ellipse 900px 500px at 50% -10%, rgba(47, 111, 237, 0.16), transparent 65%);
+      background-size: 28px 28px, 28px 28px, 100% 100%;
       color: var(--text-main);
+      font-family: var(--font-body);
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    .container {
-      width: min(940px, 92%);
-      margin: 0 auto;
-      flex: 1;
-    }
+    .container { width: min(880px, 92%); margin: 0 auto; flex: 1; }
 
     /* Header */
     header {
-      padding: 24px 0;
+      padding: 18px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
+    .logo { display: flex; align-items: center; gap: 10px; }
 
     .logo-img {
-      height: 38px;
-      width: auto;
-      object-fit: contain;
-      border-radius: 8px;
-      filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.3));
-      transition: transform 0.3s ease;
-    }
-
-    .logo-img:hover {
-      transform: scale(1.06);
+      height: 26px; width: 26px; object-fit: contain;
+      border-radius: 6px; border: 1px solid var(--line-strong);
     }
 
     .logo-fallback {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      font-size: 18px;
-      color: #fff;
+      width: 26px; height: 26px; display: grid; place-items: center;
+      border-radius: 6px; background: var(--panel-raised);
+      border: 1px solid var(--line-strong); font-size: 13px; color: var(--signal);
     }
 
-    .logo span {
-      background: linear-gradient(135deg, #a78bfa, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .logo-text { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
+    .logo-text span { color: var(--text-subtle); }
+
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 12px; border: 1px solid var(--line); border-radius: 100px;
+      background: var(--panel); font-family: var(--font-mono);
+      color: var(--text-muted); font-size: 11px; letter-spacing: 0.4px;
     }
 
-    .badge {
-      padding: 6px 14px;
-      border: 1px solid var(--card-border);
+    .status-pill .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--signal-mint); box-shadow: 0 0 0 3px rgba(23, 199, 154, 0.15);
+    }
+
+    .btn-install {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border: 1px solid rgba(47, 111, 237, 0.4);
       border-radius: 100px;
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-muted);
-      font-size: 12px;
+      background: rgba(47, 111, 237, 0.12);
+      color: #a9c2fb;
+      font-family: var(--font-mono);
+      font-size: 11px;
       font-weight: 600;
-      backdrop-filter: blur(10px);
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      padding: 30px 0 20px;
+    .btn-install:hover { background: rgba(47, 111, 237, 0.2); }
+
+    /* Hero */
+    .hero { text-align: center; padding: 46px 0 28px; }
+
+    .eyebrow {
+      display: inline-block; font-family: var(--font-mono); font-size: 11px;
+      font-weight: 500; letter-spacing: 2px; color: var(--signal);
+      margin-bottom: 18px; text-transform: uppercase;
     }
 
     .hero h1 {
-      font-size: clamp(32px, 5vw, 52px);
-      line-height: 1.15;
-      letter-spacing: -1.2px;
-      margin-bottom: 16px;
-      font-weight: 800;
+      font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.18; letter-spacing: -0.8px; margin-bottom: 14px; font-weight: 700;
     }
 
-    .gradient-text {
-      background: linear-gradient(135deg, #c084fc, #8b5cf6, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+    .hero h1 em { font-style: normal; color: var(--signal-mint); }
 
     .hero p {
-      max-width: 540px;
-      margin: 0 auto 32px;
-      color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.6;
+      max-width: 460px; margin: 0 auto 34px; color: var(--text-muted);
+      font-size: 14.5px; line-height: 1.6;
     }
 
-    /* Main Downloader Card */
+    /* Downloader card */
     .downloader-card {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 16px;
-      border: 1px solid var(--card-border);
-      border-radius: calc(var(--radius) + 6px);
-      background: var(--card-bg);
-      backdrop-filter: blur(24px);
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      max-width: 760px; margin: 0 auto; padding: 14px;
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: var(--panel); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     }
 
-    .downloader-card:focus-within {
-      border-color: var(--card-border-glow);
-      box-shadow: 0 25px 80px rgba(139, 92, 246, 0.15);
-    }
-
-    .input-box {
-      display: flex;
-      gap: 10px;
-      padding: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius);
-      background: rgba(0, 0, 0, 0.4);
-      transition: all 0.3s ease;
-    }
+    .input-box { display: flex; gap: 8px; }
 
     .input-wrapper {
-      position: relative;
-      flex: 1;
-      display: flex;
-      align-items: center;
+      position: relative; flex: 1; display: flex; align-items: center;
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--ink); transition: border-color 0.2s ease;
     }
 
+    .input-wrapper:focus-within { border-color: var(--signal); }
+
     .input-icon {
-      position: absolute;
-      left: 16px;
-      color: var(--text-subtle);
-      display: flex;
-      align-items: center;
-      pointer-events: none;
+      position: absolute; left: 14px; color: var(--text-subtle);
+      display: flex; align-items: center; pointer-events: none;
     }
 
     .input-box input {
-      width: 100%;
-      padding: 14px 40px 14px 46px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: white;
-      font-size: 15px;
+      width: 100%; padding: 13px 38px 13px 42px; border: 0; outline: 0;
+      background: transparent; color: var(--text-main);
+      font-family: var(--font-mono); font-size: 13.5px;
     }
 
-    .input-box input::placeholder {
-      color: var(--text-subtle);
-    }
+    .input-box input::placeholder { color: var(--text-subtle); font-family: var(--font-body); }
 
     .clear-btn {
-      position: absolute;
-      right: 12px;
-      width: 24px;
-      height: 24px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.2s ease;
+      position: absolute; right: 10px; width: 22px; height: 22px; display: none;
+      align-items: center; justify-content: center; border: 0; border-radius: 50%;
+      background: var(--panel-raised); color: var(--text-muted); cursor: pointer;
+      font-size: 11px; transition: all 0.2s ease;
     }
 
-    .clear-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-      color: #fff;
-    }
+    .clear-btn:hover { background: var(--line-strong); color: #fff; }
 
     .btn {
-      border: 0;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 14px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      user-select: none;
+      border: 0; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px; font-family: var(--font-body);
+      font-size: 13.5px; font-weight: 600; border-radius: var(--radius-sm);
+      transition: all 0.2s ease; user-select: none;
     }
 
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none !important;
-    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-    .btn-paste {
-      padding: 0 20px;
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
+    .btn-paste { padding: 0 18px; background: var(--panel-raised); color: var(--text-main); border: 1px solid var(--line); }
+    .btn-paste:hover { border-color: var(--line-strong); }
 
-    .btn-paste:hover {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.18);
-    }
+    .btn-download { padding: 0 26px; background: var(--signal); color: white; }
+    .btn-download:hover:not(:disabled) { background: #4c82f0; }
 
-    .btn-download {
-      padding: 0 30px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      color: white;
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn-download:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
-      filter: brightness(1.1);
-    }
-
-    /* Loading Box */
-    .status-box {
-      display: none;
-      padding: 40px 20px;
-      text-align: center;
-    }
+    /* Status */
+    .status-box { display: none; padding: 34px 20px 16px; text-align: center; }
 
     .spinner {
-      width: 36px;
-      height: 36px;
-      margin: 0 auto 16px;
-      border: 3px solid rgba(255, 255, 255, 0.08);
-      border-top-color: var(--accent-purple);
-      border-radius: 50%;
-      animation: spin 0.7s infinite linear;
+      width: 24px; height: 24px; margin: 0 auto 14px; border: 2px solid var(--line);
+      border-top-color: var(--signal); border-radius: 50%; animation: spin 0.7s infinite linear;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .status-text {
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-    }
+    .status-text { font-family: var(--font-mono); color: var(--text-muted); font-size: 12.5px; }
 
-    /* Error Box */
+    /* Error */
     .error-box {
-      display: none;
-      margin-top: 16px;
-      padding: 14px 18px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 14px;
-      background: rgba(239, 68, 68, 0.1);
-      color: #fca5a5;
-      font-size: 14px;
-      text-align: center;
-      line-height: 1.5;
+      display: none; margin-top: 12px; padding: 12px 14px;
+      border-left: 3px solid var(--danger); border-radius: 4px;
+      background: rgba(240, 83, 61, 0.08); color: #ffb3a3; font-size: 13px; line-height: 1.5;
     }
 
-    /* Result Card */
+    /* Result — styled like an extraction ticket */
     .result-card {
-      display: none;
-      margin-top: 20px;
-      overflow: hidden;
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.02);
-      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: none; position: relative; margin-top: 14px; overflow: hidden;
+      border: 1px solid var(--line); border-top: 1px dashed var(--line-strong);
+      border-radius: var(--radius-sm); background: var(--panel-raised); animation: fadeIn 0.35s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .result-stamp {
+      position: absolute; top: 14px; right: 14px; padding: 3px 9px;
+      border: 1px solid var(--signal-mint); border-radius: 4px; color: var(--signal-mint);
+      font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+      letter-spacing: 1.5px; transform: rotate(3deg); z-index: 2;
     }
 
-    .result-content {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 24px;
-    }
+    .result-content { display: flex; flex-direction: column; gap: 18px; padding: 20px; }
+
+    .result-eyebrow { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.5px; color: var(--text-subtle); }
 
     .preview-wrapper {
-      width: 100%;
-      min-height: 200px;
-      max-height: 380px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 16px;
-      background: #000;
+      position: relative; width: 100%; min-height: 180px; max-height: 340px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 10px; background: #000;
     }
 
-    .preview-media {
-      width: 100%;
-      max-height: 380px;
-      object-fit: contain;
+    .preview-media { width: 100%; max-height: 340px; object-fit: contain; }
+
+    /* Carousel (multi-slide preview) */
+    .carousel { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .carousel-img { width: 100%; max-height: 340px; object-fit: contain; }
+    .carousel-nav {
+      position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px;
+      border-radius: 50%; background: rgba(0, 0, 0, 0.55); color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2); font-size: 19px; line-height: 1;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .carousel-prev { left: 10px; }
+    .carousel-next { right: 10px; }
+    .carousel-counter {
+      position: absolute; bottom: 10px; right: 12px; padding: 3px 10px; border-radius: 20px;
+      background: rgba(0, 0, 0, 0.6); font-family: var(--font-mono); font-size: 11px; color: #fff;
     }
 
-    .result-details {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+    .result-details { display: flex; flex-direction: column; gap: 16px; }
 
     .media-title {
-      color: white;
-      font-size: 17px;
-      font-weight: 700;
-      line-height: 1.45;
-      text-align: center;
-      word-break: break-word;
+      font-family: var(--font-display); color: white; font-size: 16px;
+      font-weight: 600; line-height: 1.4; word-break: break-word;
     }
 
-    .media-author {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
+    .media-author { margin-top: 5px; font-family: var(--font-mono); color: var(--text-muted); font-size: 12px; }
 
     .format-section-title {
-      margin-bottom: 12px;
-      color: var(--text-subtle);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-align: center;
+      margin-bottom: 10px; padding-top: 12px; border-top: 1px solid var(--line);
+      color: var(--text-subtle); font-family: var(--font-mono); font-size: 10.5px;
+      font-weight: 600; letter-spacing: 1.5px;
     }
 
-    .formats-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .option-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .formats-grid { display: flex; flex-direction: column; gap: 10px; }
+    .option-row { width: 100%; display: flex; align-items: center; gap: 8px; }
 
     .btn-option {
-      flex: 1;
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border: 0;
-      border-radius: 14px;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      transition: all 0.25s ease;
+      flex: 1; padding: 13px; display: flex; align-items: center; justify-content: center;
+      gap: 8px; border: 0; border-radius: var(--radius-sm); color: white; cursor: pointer;
+      font-family: var(--font-body); font-size: 13.5px; font-weight: 600; transition: filter 0.2s ease;
     }
 
-    .btn-option:hover:not(:disabled) {
-      transform: translateY(-2px);
-      filter: brightness(1.15);
-    }
-
-    .btn-option-video {
-      background: linear-gradient(135deg, #7c3aed, #6366f1);
-      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
-    }
-
-    .btn-option-audio {
-      background: linear-gradient(135deg, #ec4899, #8b5cf6);
-      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.25);
-    }
+    .btn-option:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-option-video { background: var(--signal); }
+    .btn-option-audio { background: var(--signal-mint); }
 
     .btn-copy-direct {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center;
+      justify-content: center; border: 1px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--ink); color: white; cursor: pointer; transition: all 0.2s ease;
     }
 
-    .btn-copy-direct:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
+    .btn-copy-direct:hover { border-color: var(--line-strong); }
+    .btn-option-photo { background: #475569; }
 
-    /* Features Section */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin: 50px auto 40px;
-      max-width: 800px;
-    }
-
-    .feature-card {
-      padding: 24px 20px;
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      background: rgba(18, 24, 38, 0.4);
-      backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      transition: all 0.3s ease;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(139, 92, 246, 0.3);
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
-    }
-
-    .feature-icon-wrapper {
-      width: 44px;
-      height: 44px;
-      margin-bottom: 16px;
-      display: grid;
-      place-items: center;
+    .ios-hint {
+      display: none;
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: 340px;
+      max-width: 92%;
+      padding: 14px 16px;
+      border: 1px solid var(--line-strong);
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--accent-purple);
-    }
-
-    .feature-card h3 {
-      margin-bottom: 8px;
-      font-size: 15px;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 13px;
+      background: var(--panel-raised);
+      color: var(--text-main);
+      font-size: 12.5px;
       line-height: 1.55;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      z-index: 50;
+    }
+
+    .ios-hint strong { color: var(--signal-mint); }
+
+    /* About section */
+    .about {
+      margin: 56px auto 0; max-width: 760px; padding: 30px;
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+    }
+
+    .about h2 { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+
+    .about > p {
+      color: var(--text-muted); font-size: 13.5px; line-height: 1.75; margin-bottom: 26px;
+    }
+
+    .feature-list {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 26px;
+    }
+
+    .feature-row { display: flex; gap: 12px; align-items: flex-start; }
+
+    .feature-icon {
+      flex-shrink: 0; width: 32px; height: 32px; display: grid; place-items: center;
+      border-radius: 8px; background: var(--panel-raised); border: 1px solid var(--line); font-size: 14px;
+    }
+
+    .feature-row h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+    .feature-row p { color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+
+    .platform-title {
+      font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 1.5px;
+      color: var(--text-subtle); margin-bottom: 12px; padding-top: 20px; border-top: 1px solid var(--line);
+    }
+
+    .platform-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .platform-badge {
+      padding: 6px 13px; border: 1px solid var(--line); border-radius: 100px;
+      background: var(--panel-raised); font-size: 12px; color: var(--text-muted);
     }
 
     /* Footer */
     footer {
-      padding: 32px 0 40px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-subtle);
-      font-size: 13px;
-      text-align: center;
-      line-height: 1.6;
+      padding: 26px 0 36px; border-top: 1px solid var(--line); color: var(--text-subtle);
+      font-family: var(--font-mono); font-size: 11.5px; text-align: center; line-height: 1.7; margin-top: 40px;
     }
 
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .hero {
-        padding-top: 15px;
-      }
-
-      .input-box {
-        flex-direction: column;
-        padding: 0;
-        border: 0;
-        background: transparent;
-      }
-
-      .input-wrapper {
-        width: 100%;
-      }
-
-      .input-box input {
-        padding: 16px 40px 16px 46px;
-        border: 1px solid var(--card-border);
-        border-radius: 14px;
-        background: rgba(0, 0, 0, 0.5);
-      }
-
-      .clear-btn {
-        top: 16px;
-        right: 14px;
-      }
-
-      .btn {
-        height: 50px;
-        border-radius: 14px;
-        width: 100%;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .feature-card {
-        padding: 20px;
-      }
+    /* Mobile */
+    @media (max-width: 720px) {
+      .input-box { flex-direction: column; }
+      .btn { height: 46px; width: 100%; }
+      .feature-list { grid-template-columns: 1fr; }
+      .about { padding: 22px; }
     }
   </style>
 </head>
@@ -568,27 +377,31 @@
   <div class="container">
     <header>
       <div class="logo">
-        <img 
-          src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png" 
-          alt="KAJ Logo" 
+        <img
+          src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png"
+          alt="KAJ Logo"
           class="logo-img"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
         >
-        <div class="logo-fallback" style="display: none;">⚡</div>
-        <span>Downloader</span>Hub
+        <div class="logo-fallback" style="display: none;">⌁</div>
+        <div class="logo-text">DOWNLOADER<span>_HUB</span></div>
       </div>
-      <div class="badge">by KAJ</div>
+      <div class="header-right">
+        <button id="installBtn" class="btn-install" type="button">📲 Install App</button>
+        <div class="status-pill"><span class="dot"></span>API AKTIF</div>
+      </div>
     </header>
 
     <section class="hero">
-      <h1>Unduh Media Apapun.<br><span class="gradient-text">Instant & Tanpa Batas.</span></h1>
-      <p>Tempel tautan video atau audio pilihan Anda di bawah ini.</p>
+      <span class="eyebrow">Alat unduh media serbaguna</span>
+      <h1>Satu tautan.<br><em>Semua format.</em></h1>
+      <p>Tempel tautan video, foto, atau audio dari platform pilihan Anda, lalu unduh dalam format yang Anda butuhkan.</p>
 
       <div class="downloader-card">
         <div class="input-box">
           <div class="input-wrapper">
             <div class="input-icon">
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
               </svg>
             </div>
@@ -601,13 +414,13 @@
             <button id="clearBtn" class="clear-btn" type="button" aria-label="Hapus Teks">✕</button>
           </div>
           <button id="pasteBtn" class="btn btn-paste" type="button">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
             Tempel
           </button>
           <button id="downloadBtn" class="btn btn-download" type="button">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
             </svg>
             Unduh
@@ -622,12 +435,14 @@
         <div id="errorBox" class="error-box"></div>
 
         <div id="resultCard" class="result-card">
+          <div class="result-stamp">SIAP</div>
           <div class="result-content">
+            <div class="result-eyebrow">HASIL EKSTRAKSI</div>
             <div id="previewWrapper" class="preview-wrapper"></div>
             <div class="result-details">
               <div>
                 <h2 id="resultTitle" class="media-title">Judul Media</h2>
-                <div id="mediaAuthor" class="media-author">👤 Sumber Publik</div>
+                <div id="mediaAuthor" class="media-author">Sumber Publik</div>
               </div>
               <div>
                 <div class="format-section-title">PILIH OPSI UNDUHAN</div>
@@ -639,47 +454,62 @@
       </div>
     </section>
 
-    <section class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon-wrapper">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
+    <section class="about">
+      <span class="eyebrow" style="margin-bottom:8px;">Dikembangkan oleh KAJ</span>
+      <h2>Tentang Downloader Hub</h2>
+      <p>Downloader Hub adalah aplikasi web serbaguna (All-in-One Downloader) berdesain elegan. Solusi praktis untuk mengunduh beragam konten dari satu tempat — mulai dari media sosial (TikTok, Instagram, X, dsb), platform streaming (YouTube), musik (Spotify, SoundCloud, Apple Music, dsb), hingga platform cloud storage (MediaFire, Mega).</p>
+
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="feature-icon">⚡</div>
+          <div><h4>Direct Fast Save</h4><p>Pengunduhan langsung tanpa proses bertingkat atau iklan mengganggu.</p></div>
         </div>
-        <h3>Direct Fast Save</h3>
-        <p>Proses unduhan instan sekali konfirmasi tanpa melalui pop-up iklan mengganggu.</p>
+        <div class="feature-row">
+          <div class="feature-icon">📋</div>
+          <div><h4>Penempelan Otomatis</h4><p>Memicu izin papan klip (clipboard) browser untuk menempelkan URL secara instan.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🎵</div>
+          <div><h4>Berbagai Pilihan Format</h4><p>Dukungan unduhan format video (MP4 / MP4 HD) dan audio (MP3).</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🔗</div>
+          <div><h4>Direct Link Copy</h4><p>Salin tautan unduhan langsung untuk dipakai di IDM, ADM, atau download manager lain.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🖼️</div>
+          <div><h4>Pratinjau Media</h4><p>Menampilkan thumbnail, slide, dan detail media sebelum diunduh.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">📱</div>
+          <div><h4>Desain Responsif</h4><p>Tampilan optimal di perangkat desktop maupun mobile, bisa dipasang sebagai aplikasi.</p></div>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon-wrapper">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-          </svg>
-        </div>
-        <h3>Salin Direct Link</h3>
-        <p>Dapatkan link unduhan langsung yang dapat digunakan pada IDM, ADM, atau downloader eksternal.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon-wrapper">
-          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <h3>Pratinjau Jelas</h3>
-        <p>Lihat gambar thumbnail atau media sebelum memilih format audio atau video yang akan diunduh.</p>
+      <div class="platform-title">MENDUKUNG</div>
+      <div class="platform-badges">
+        <span class="platform-badge">TikTok</span>
+        <span class="platform-badge">Instagram</span>
+        <span class="platform-badge">X (Twitter)</span>
+        <span class="platform-badge">YouTube</span>
+        <span class="platform-badge">Spotify</span>
+        <span class="platform-badge">SoundCloud</span>
+        <span class="platform-badge">Apple Music</span>
+        <span class="platform-badge">MediaFire</span>
+        <span class="platform-badge">Mega</span>
       </div>
     </section>
 
-    <footer>
-      &copy; 2026 Downloader Hub. All rights reserved.<br>
-      Created & Maintained by KAJ.
-    </footer>
+    <footer>© 2026 DOWNLOADER_HUB — DIBUAT & DIRAWAT OLEH KAJ</footer>
+  </div>
+
+  <div id="iosHint" class="ios-hint">
+    Di Safari: ketuk tombol <strong>Bagikan</strong> (ikon kotak dengan panah ke atas), lalu pilih <strong>“Tambah ke Layar Utama”</strong> untuk memasang aplikasi ini.
   </div>
 
   <script>
     // ========================================================
-    // LOGIKA UTAMA SCRIPT (100% ASLI DARI KODE PERTAMA)
+    // LOGIKA INTI: fetch API, render hasil — struktur data API tidak diubah
     // ========================================================
     const API_URL = "https://api.nexray.eu.cc/downloader/aio";
 
@@ -708,7 +538,6 @@
       urlInput.focus();
     });
 
-    // SISTEM TEMPEL OTOMATIS + POP-UP IZIN BROWSER (SEPERTI SNAPTIK)
     pasteBtn.addEventListener("click", async () => {
       clearError();
       try {
@@ -716,10 +545,7 @@
           showError("⚠️ Browser Anda tidak mendukung penempelan otomatis. Silakan tahan lama kolom input lalu pilih Tempel.");
           return;
         }
-
-        // Memicu pop-up izin browser resmi untuk membaca clipboard
         const text = await navigator.clipboard.readText();
-        
         if (text && text.trim() !== "") {
           urlInput.value = text.trim();
           clearBtn.style.display = "flex";
@@ -756,6 +582,18 @@
       downloadBtn.textContent = loading ? "Memproses..." : "Unduh";
     }
 
+    // Fallback tanpa membuka tab baru: memakai iframe tersembunyi,
+    // bukan window/tab baru seperti pada versi sebelumnya.
+    function triggerBackgroundDownload(url) {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      setTimeout(() => {
+        if (document.body.contains(iframe)) document.body.removeChild(iframe);
+      }, 8000);
+    }
+
     async function directDownloadFile(downloadUrl, fileName, button, fileType) {
       const confirmed = confirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`);
       if (!confirmed) return;
@@ -784,19 +622,8 @@
 
         button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
       } catch (error) {
-        const fallback = document.createElement("a");
-        fallback.href = downloadUrl;
-        fallback.target = "_blank";
-        fallback.download = fileName;
-        fallback.rel = "noopener noreferrer";
-        fallback.style.display = "none";
-        document.body.appendChild(fallback);
-        fallback.click();
-
-        setTimeout(() => {
-          if (document.body.contains(fallback)) document.body.removeChild(fallback);
-        }, 1000);
-
+        // Tetap di halaman yang sama, tidak membuka tab baru
+        triggerBackgroundDownload(downloadUrl);
         button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
       }
 
@@ -804,6 +631,27 @@
         button.innerHTML = originalText;
         button.disabled = false;
       }, 3500);
+    }
+
+    async function downloadSlideImage(url, index) {
+      try {
+        const response = await fetch(url, { method: "GET", mode: "cors" });
+        if (!response.ok) throw new Error("CORS / Server issue");
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = `slide_${index}.jpg`;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          if (document.body.contains(link)) document.body.removeChild(link);
+          URL.revokeObjectURL(blobUrl);
+        }, 2000);
+      } catch {
+        triggerBackgroundDownload(url);
+      }
     }
 
     async function startDownload() {
@@ -847,6 +695,92 @@
       }
     }
 
+    // Deteksi konten multi-slide (misal carousel foto Instagram)
+    function extractSlideImages(data) {
+      const direct = data.slides || data.images || data.photos;
+      if (Array.isArray(direct) && direct.length > 1) {
+        return direct.map((it) => (typeof it === "string" ? it : (it.url || it.link || it.image))).filter(Boolean);
+      }
+      const pool = [
+        ...(Array.isArray(data.medias) ? data.medias : []),
+        ...(Array.isArray(data.formats) ? data.formats : []),
+        ...(Array.isArray(data.downloads) ? data.downloads : []),
+      ];
+      const photoItems = pool.filter((it) => {
+        const t = String(it.type || it.quality || it.ext || it.extension || "").toLowerCase();
+        return t.includes("image") || t.includes("photo") || t.includes("jpg") || t.includes("jpeg") || t.includes("png");
+      });
+      if (photoItems.length > 1) {
+        return photoItems.map((it) => it.url || it.link).filter(Boolean);
+      }
+      return [];
+    }
+
+    function renderCarousel(images) {
+      let current = 0;
+      const wrap = document.createElement("div");
+      wrap.className = "carousel";
+
+      const imgEl = document.createElement("img");
+      imgEl.className = "carousel-img";
+      imgEl.src = images[0];
+      imgEl.alt = "Slide 1";
+
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.className = "carousel-nav carousel-prev";
+      prevBtn.innerHTML = "‹";
+
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.className = "carousel-nav carousel-next";
+      nextBtn.innerHTML = "›";
+
+      const counter = document.createElement("div");
+      counter.className = "carousel-counter";
+      counter.textContent = `1 / ${images.length}`;
+
+      function update() {
+        imgEl.src = images[current];
+        imgEl.alt = `Slide ${current + 1}`;
+        counter.textContent = `${current + 1} / ${images.length}`;
+      }
+
+      prevBtn.onclick = () => { current = (current - 1 + images.length) % images.length; update(); };
+      nextBtn.onclick = () => { current = (current + 1) % images.length; update(); };
+
+      wrap.appendChild(imgEl);
+      wrap.appendChild(prevBtn);
+      wrap.appendChild(nextBtn);
+      wrap.appendChild(counter);
+      previewWrapper.appendChild(wrap);
+
+      const row = document.createElement("div");
+      row.className = "option-row";
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = "btn-option btn-option-video";
+      allBtn.innerHTML = `Unduh Semua Slide (${images.length})`;
+      allBtn.onclick = async () => {
+        const confirmed = confirm(`Unduh ${images.length} gambar slide ini?`);
+        if (!confirmed) return;
+        allBtn.disabled = true;
+        const original = allBtn.innerHTML;
+        for (let i = 0; i < images.length; i++) {
+          allBtn.innerHTML = `Mengunduh ${i + 1}/${images.length}...`;
+          await downloadSlideImage(images[i], i + 1);
+          await new Promise((r) => setTimeout(r, 400));
+        }
+        allBtn.innerHTML = "Semua slide sudah diunduh";
+        setTimeout(() => {
+          allBtn.innerHTML = original;
+          allBtn.disabled = false;
+        }, 3000);
+      };
+      row.appendChild(allBtn);
+      formatsGrid.appendChild(row);
+    }
+
     function displayResult(data) {
       previewWrapper.innerHTML = "";
       formatsGrid.innerHTML = "";
@@ -863,8 +797,13 @@
         mediaList = [{ url: data.url || data.link, quality: "1080p", ext: "mp4" }];
       }
 
+      // Preview: carousel jika lebih dari satu slide, kalau tidak pakai thumbnail tunggal
+      const slideImages = extractSlideImages(data);
       const thumbnail = data.thumbnail || data.thumb || data.cover || data.image;
-      if (thumbnail) {
+
+      if (slideImages.length > 1) {
+        renderCarousel(slideImages);
+      } else if (thumbnail) {
         const image = document.createElement("img");
         image.className = "preview-media";
         image.src = thumbnail;
@@ -877,6 +816,7 @@
       let hasHD = false;
       let hasStandard = false;
       let hasAudio = false;
+      let hasPhoto = false;
 
       mediaList.forEach((item) => {
         const downloadUrl = item.url || item.link;
@@ -884,29 +824,37 @@
 
         const quality = String(item.quality || item.resolution || item.type || "").toLowerCase();
         const extension = String(item.ext || item.extension || item.format || "").toLowerCase();
+        const isPhotoItem =
+          quality.includes("image") || quality.includes("photo") ||
+          extension.includes("jpg") || extension.includes("jpeg") || extension.includes("png");
+
+        // Foto yang sudah tampil di carousel slide tidak perlu tombol duplikat di sini
+        if (isPhotoItem && slideImages.length > 1) return;
 
         let label = "Unduh MP4";
-        let icon = "";
         let type = "mp4";
         let className = "btn-option-video";
 
-        if (quality.includes("mp3") || extension.includes("mp3") || quality.includes("audio")) {
+        if (isPhotoItem) {
+          if (hasPhoto) return;
+          label = "Unduh Foto";
+          type = "jpg";
+          className = "btn-option-photo";
+          hasPhoto = true;
+        } else if (quality.includes("mp3") || extension.includes("mp3") || quality.includes("audio")) {
           if (hasAudio) return;
           label = "Unduh MP3";
-          icon = "";
           type = "mp3";
           className = "btn-option-audio";
           hasAudio = true;
         } else if (quality.includes("1080") || quality.includes("fhd") || quality.includes("hd")) {
           if (hasHD) return;
           label = "Unduh MP4 HD";
-          icon = "";
           type = "mp4";
           hasHD = true;
         } else {
           if (hasStandard) return;
           label = "Unduh MP4";
-          icon = "";
           type = "mp4";
           hasStandard = true;
         }
@@ -916,7 +864,7 @@
 
         const button = document.createElement("button");
         button.className = `btn-option ${className}`;
-        button.innerHTML = `${icon} ${label}`;
+        button.innerHTML = label;
         button.onclick = () => {
           const safeTitle = title.replace(/[^a-zA-Z0-9À-ÿ\s_-]/g, "").trim().replace(/\s+/g, "_").substring(0, 80);
           const fileName = `${safeTitle || "DownloaderHub"}.${type}`;
@@ -962,6 +910,66 @@
         startDownload();
       }
     });
+
+    // ========================================================
+    // PWA: tombol "Install App"
+    // ========================================================
+    let deferredPrompt;
+    let iosHintTimer;
+    const installBtn = document.getElementById("installBtn");
+    const iosHint = document.getElementById("iosHint");
+
+    function isIOS() {
+      return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    function isStandaloneMode() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    // Chrome / Edge / Android: tombol muncul lewat event resmi ini
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = "inline-flex";
+    });
+
+    // Safari iOS tidak pernah memicu beforeinstallprompt, jadi tombol
+    // ditampilkan manual dan mengarahkan ke langkah Share > Add to Home Screen
+    if (isIOS() && !isStandaloneMode()) {
+      installBtn.style.display = "inline-flex";
+    }
+
+    installBtn.addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.style.display = "none";
+        return;
+      }
+      if (isIOS()) {
+        iosHint.style.display = "block";
+        clearTimeout(iosHintTimer);
+        iosHintTimer = setTimeout(() => { iosHint.style.display = "none"; }, 6000);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (iosHint.style.display === "block" && event.target !== installBtn && !iosHint.contains(event.target)) {
+        iosHint.style.display = "none";
+      }
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installBtn.style.display = "none";
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      });
+    }
   </script>
 </body>
 </html>
