@@ -2,7 +2,7 @@
 // Tujuannya hanya memenuhi syarat installability PWA (Chrome/Edge),
 // bukan untuk caching agresif — supaya hasil ekstraksi API selalu segar.
 
-const CACHE_NAME = "downloader-hub-shell-v2";
+const CACHE_NAME = "downloader-hub-shell-v3";
 const SHELL_FILES = [
   "./",
   "./index.html",
