@@ -1,1 +1,165 @@
-ssb
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Downloader Hub by KAJ</title>
+
+  <meta name="description" content="Downloader Hub — aplikasi web All-in-One Downloader. Unduh video, foto, dan audio dari TikTok, Instagram, X, YouTube, Spotify, SoundCloud, Apple Music, MediaFire, dan Mega dari satu tempat.">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Downloader Hub by KAJ">
+  <link rel="apple-touch-icon" href="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6fed'/%3E%3Cpath d='M16 8v11m0 0l-4.5-4.5M16 19l4.5-4.5M8.5 24h15' stroke='white' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img
+          src="https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png"
+          alt="KAJ Logo"
+          class="logo-img"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+        >
+        <div class="logo-fallback" style="display: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/>
+          </svg>
+        </div>
+        <div class="logo-text">Downloader Hub</div>
+        <span class="by-kaj">by KAJ</span>
+      </div>
+      <div class="header-right">
+        <button id="installBtn" class="btn-install" type="button">📲 Install App</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-brand">Downloader Hub</div>
+      <span class="eyebrow">Alat unduh media serbaguna</span>
+      <h1>Satu tautan.<br><em>Semua format.</em></h1>
+      <p>Tempel tautan video, foto, atau audio dari platform pilihan Anda, lalu unduh dalam format yang Anda butuhkan.</p>
+
+      <div class="downloader-card">
+        <div class="input-box">
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+            </div>
+            <input
+              id="urlInput"
+              type="url"
+              placeholder="Tempel URL media di sini (TikTok, IG, YT, dll)..."
+              autocomplete="off"
+            >
+            <button id="clearBtn" class="clear-btn" type="button" aria-label="Hapus Teks">✕</button>
+          </div>
+          <button id="pasteBtn" class="btn btn-paste" type="button">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Tempel
+          </button>
+          <button id="downloadBtn" class="btn btn-download" type="button">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Unduh
+          </button>
+        </div>
+
+        <div id="statusBox" class="status-box">
+          <div class="spinner"></div>
+          <div id="statusText" class="status-text">Sedang mengekstrak media...</div>
+        </div>
+
+        <div id="errorBox" class="error-box"></div>
+
+        <div id="resultCard" class="result-card">
+          <div class="result-stamp">SIAP</div>
+          <div class="result-content">
+            <div class="result-eyebrow">HASIL EKSTRAKSI</div>
+            <div id="previewWrapper" class="preview-wrapper"></div>
+            <div class="result-details">
+              <div>
+                <h2 id="resultTitle" class="media-title">Judul Media</h2>
+                <div id="mediaAuthor" class="media-author">Sumber Publik</div>
+              </div>
+              <div>
+                <div class="format-section-title">PILIH OPSI UNDUHAN</div>
+                <div id="formatsGrid" class="formats-grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about">
+      <span class="eyebrow" style="margin-bottom:8px;">Dikembangkan oleh KAJ</span>
+      <h2>Tentang Downloader Hub</h2>
+      <p>Downloader Hub adalah aplikasi web serbaguna (All-in-One Downloader) berdesain elegan. Solusi praktis untuk mengunduh beragam konten dari satu tempat — mulai dari media sosial (TikTok, Instagram, X, dsb), platform streaming (YouTube), musik (Spotify, SoundCloud, Apple Music, dsb), hingga platform cloud storage (MediaFire, Mega).</p>
+
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="feature-icon">⚡</div>
+          <div><h4>Direct Fast Save</h4><p>Pengunduhan langsung tanpa proses bertingkat atau iklan mengganggu.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">📋</div>
+          <div><h4>Penempelan Otomatis</h4><p>Memicu izin papan klip (clipboard) browser untuk menempelkan URL secara instan.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🎵</div>
+          <div><h4>Berbagai Pilihan Format</h4><p>Dukungan unduhan format video (MP4 / MP4 HD) dan audio (MP3).</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🔗</div>
+          <div><h4>Direct Link Copy</h4><p>Salin tautan unduhan langsung untuk dipakai di IDM, ADM, atau download manager lain.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🖼️</div>
+          <div><h4>Pratinjau Media</h4><p>Menampilkan thumbnail, slide, dan detail media sebelum diunduh.</p></div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">📱</div>
+          <div><h4>Desain Responsif</h4><p>Tampilan optimal di perangkat desktop maupun mobile, bisa dipasang sebagai aplikasi.</p></div>
+        </div>
+      </div>
+
+      <div class="platform-title">MENDUKUNG</div>
+      <div class="platform-badges">
+        <span class="platform-badge">TikTok</span>
+        <span class="platform-badge">Instagram</span>
+        <span class="platform-badge">X (Twitter)</span>
+        <span class="platform-badge">YouTube</span>
+        <span class="platform-badge">Spotify</span>
+        <span class="platform-badge">SoundCloud</span>
+        <span class="platform-badge">Apple Music</span>
+        <span class="platform-badge">MediaFire</span>
+        <span class="platform-badge">Mega</span>
+      </div>
+    </section>
+
+    <footer>© 2026 Downloader Hub — Dibuat &amp; Dirawat oleh <a href="https://bit.ly/kvnathhllh" target="_blank" rel="noopener noreferrer">KAJ</a></footer>
+  </div>
+
+  <div id="iosHint" class="ios-hint">
+    Di Safari: ketuk tombol <strong>Bagikan</strong> (ikon kotak dengan panah ke atas), lalu pilih <strong>“Tambah ke Layar Utama”</strong> untuk memasang aplikasi ini.
+  </div>
+
+  <script src="./assets/js/app.js"></script>
+</body>
+</html>
+
