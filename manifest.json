@@ -1,0 +1,25 @@
+{
+  "name": "Downloader Hub by KAJ",
+  "short_name": "Downloader Hub",
+  "description": "Aplikasi web All-in-One Downloader — unduh video, foto, dan audio dari TikTok, Instagram, X, YouTube, Spotify, SoundCloud, Apple Music, MediaFire, dan Mega dari satu tempat.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d10",
+  "theme_color": "#0b0d10",
+  "icons": [
+    {
+      "src": "https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn.phototourl.com/free/2026-07-21-89e694b0-1b75-4e80-9292-c28626f827e2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
