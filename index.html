@@ -39,6 +39,7 @@
         <span class="by-kaj">by KAJ</span>
       </div>
       <div class="header-right">
+        <div id="authArea" class="auth-area"></div>
         <button id="installBtn" class="btn-install" type="button">📲 Install App</button>
       </div>
     </header>
@@ -117,16 +118,12 @@
           <div><h4>Direct Fast Save</h4><p>Pengunduhan langsung tanpa proses bertingkat atau iklan mengganggu.</p></div>
         </div>
         <div class="feature-row">
-          <div class="feature-icon">📋</div>
-          <div><h4>Penempelan Otomatis</h4><p>Memicu izin papan klip (clipboard) browser untuk menempelkan URL secara instan.</p></div>
-        </div>
-        <div class="feature-row">
           <div class="feature-icon">🎵</div>
           <div><h4>Berbagai Pilihan Format</h4><p>Dukungan unduhan format video (MP4 / MP4 HD) dan audio (MP3).</p></div>
         </div>
         <div class="feature-row">
-          <div class="feature-icon">🔗</div>
-          <div><h4>Direct Link Copy</h4><p>Salin tautan unduhan langsung untuk dipakai di IDM, ADM, atau download manager lain.</p></div>
+          <div class="feature-icon">👤</div>
+          <div><h4>Profil & Riwayat Lokal</h4><p>Masuk dengan profil ringan untuk menyimpan riwayat unduhan di perangkat ini.</p></div>
         </div>
         <div class="feature-row">
           <div class="feature-icon">🖼️</div>
@@ -156,10 +153,17 @@
   </div>
 
   <div id="iosHint" class="ios-hint">
-    Di Safari: ketuk tombol <strong>Bagikan</strong> (ikon kotak dengan panah ke atas), lalu pilih <strong>“Tambah ke Layar Utama”</strong> untuk memasang aplikasi ini.
+    Di Safari: ketuk tombol <strong>Bagikan</strong> lalu pilih <strong>“Tambah ke Layar Utama”</strong>. Di Chrome/Edge: buka menu (⋮) lalu pilih <strong>“Install app”</strong>.
   </div>
 
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button id="modalCloseBtn" class="modal-close" type="button" aria-label="Tutup">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="./assets/js/auth.js"></script>
   <script src="./assets/js/app.js"></script>
 </body>
 </html>
-
