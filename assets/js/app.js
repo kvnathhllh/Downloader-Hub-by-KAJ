@@ -84,6 +84,32 @@ function triggerBackgroundDownload(url) {
   }, 8000);
 }
 
+// Coba ambil file beberapa kali sebelum menyerah — kegagalan fetch ke CDN
+// pihak ketiga sering bersifat sementara (timeout/CORS sesaat), jadi retry
+// otomatis di sini menghindari user harus klik tombol berkali-kali.
+async function fetchBlobWithRetry(url, maxAttempts, onAttempt) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    if (onAttempt) onAttempt(attempt, maxAttempts);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const response = await fetch(url, { method: "GET", mode: "cors", signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const blob = await response.blob();
+      if (!blob || blob.size === 0) throw new Error("File kosong");
+      return blob;
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxAttempts) {
+        await new Promise((r) => setTimeout(r, 600 * attempt));
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function directDownloadFile(downloadUrl, fileName, button, fileType) {
   const confirmed = confirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`);
   if (!confirmed) return;
@@ -93,10 +119,10 @@ async function directDownloadFile(downloadUrl, fileName, button, fileType) {
   button.innerHTML = "⏳ Sedang mengunduh...";
 
   try {
-    const response = await fetch(downloadUrl, { method: "GET", mode: "cors" });
-    if (!response.ok) throw new Error("CORS / Server issue");
+    const blob = await fetchBlobWithRetry(downloadUrl, 3, (attempt, max) => {
+      if (attempt > 1) button.innerHTML = `⏳ Mencoba lagi (${attempt}/${max})...`;
+    });
 
-    const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = blobUrl;
@@ -110,11 +136,12 @@ async function directDownloadFile(downloadUrl, fileName, button, fileType) {
       URL.revokeObjectURL(blobUrl);
     }, 2000);
 
-    button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
+    button.innerHTML = "✓ Sudah diunduh, cek folder Download";
+    if (typeof addHistoryEntry === "function") addHistoryEntry(fileName, fileType);
   } catch (error) {
-    // Tetap di halaman yang sama, tidak membuka tab baru
+    // Semua percobaan gagal — tetap di halaman yang sama, tidak membuka tab baru
     triggerBackgroundDownload(downloadUrl);
-    button.innerHTML = "Sudah di Unduh silahkan cek di folder download";
+    button.innerHTML = "Dibuka via unduhan latar, cek folder Download";
   }
 
   setTimeout(() => {
@@ -125,9 +152,7 @@ async function directDownloadFile(downloadUrl, fileName, button, fileType) {
 
 async function downloadSlideImage(url, index) {
   try {
-    const response = await fetch(url, { method: "GET", mode: "cors" });
-    if (!response.ok) throw new Error("CORS / Server issue");
-    const blob = await response.blob();
+    const blob = await fetchBlobWithRetry(url, 3);
     const blobUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = blobUrl;
@@ -139,6 +164,7 @@ async function downloadSlideImage(url, index) {
       if (document.body.contains(link)) document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
     }, 2000);
+    if (typeof addHistoryEntry === "function") addHistoryEntry(`Slide ${index}`, "jpg");
   } catch {
     triggerBackgroundDownload(url);
   }
@@ -187,9 +213,11 @@ async function startDownload() {
 
 // Deteksi konten multi-slide (misal carousel foto Instagram)
 function extractSlideImages(data) {
-  const direct = data.slides || data.images || data.photos;
-  if (Array.isArray(direct) && direct.length > 1) {
-    return direct.map((it) => (typeof it === "string" ? it : (it.url || it.link || it.image))).filter(Boolean);
+  const candidates = [data.slides, data.images, data.photos];
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate) && candidate.length > 1) {
+      return candidate.map((it) => (typeof it === "string" ? it : (it.url || it.link || it.image))).filter(Boolean);
+    }
   }
   const pool = [
     ...(Array.isArray(data.medias) ? data.medias : []),
@@ -220,11 +248,13 @@ function renderCarousel(images) {
   prevBtn.type = "button";
   prevBtn.className = "carousel-nav carousel-prev";
   prevBtn.innerHTML = "‹";
+  prevBtn.setAttribute("aria-label", "Slide sebelumnya");
 
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
   nextBtn.className = "carousel-nav carousel-next";
   nextBtn.innerHTML = "›";
+  nextBtn.setAttribute("aria-label", "Slide berikutnya");
 
   const counter = document.createElement("div");
   counter.className = "carousel-counter";
@@ -419,26 +449,7 @@ function displayResult(data) {
       directDownloadFile(downloadUrl, fileName, button, type);
     };
 
-    const copyButton = document.createElement("button");
-    copyButton.className = "btn-copy-direct";
-    copyButton.innerHTML = "📋";
-    copyButton.title = "Salin Direct Link";
-    copyButton.onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(downloadUrl);
-        copyButton.innerHTML = "✓";
-        copyButton.style.color = "var(--success)";
-        setTimeout(() => {
-          copyButton.innerHTML = "📋";
-          copyButton.style.color = "white";
-        }, 1500);
-      } catch {
-        alert("Gagal menyalin tautan.");
-      }
-    };
-
     row.appendChild(button);
-    row.appendChild(copyButton);
     formatsGrid.appendChild(row);
   });
 
@@ -475,32 +486,47 @@ function isStandaloneMode() {
   return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 }
 
+function markInstalled() {
+  installBtn.disabled = true;
+  installBtn.classList.add("btn-install-done");
+  installBtn.innerHTML = "✓ Terpasang";
+}
+
 // Chrome / Edge / Android: tombol muncul lewat event resmi ini
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = "inline-flex";
+  if (!isStandaloneMode()) installBtn.style.display = "inline-flex";
 });
 
-// Safari iOS tidak pernah memicu beforeinstallprompt, jadi tombol
-// ditampilkan manual dan mengarahkan ke langkah Share > Add to Home Screen
-if (isIOS() && !isStandaloneMode()) {
+// Kalau memang sudah terpasang & sedang dibuka sebagai app, tombol tetap
+// tampil sebagai status "Terpasang" — bukan hilang begitu saja
+if (isStandaloneMode()) {
+  installBtn.style.display = "inline-flex";
+  markInstalled();
+} else if (isIOS()) {
+  // Safari iOS tidak pernah memicu beforeinstallprompt, jadi tombol
+  // ditampilkan manual dan mengarahkan ke langkah Share > Add to Home Screen
   installBtn.style.display = "inline-flex";
 }
 
 installBtn.addEventListener("click", async () => {
+  if (installBtn.disabled) return;
+
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
+    const choice = await deferredPrompt.userChoice;
     deferredPrompt = null;
-    installBtn.style.display = "none";
+    if (choice.outcome === "accepted") markInstalled();
     return;
   }
-  if (isIOS()) {
-    iosHint.style.display = "block";
-    clearTimeout(iosHintTimer);
-    iosHintTimer = setTimeout(() => { iosHint.style.display = "none"; }, 6000);
-  }
+
+  // Tidak ada prompt otomatis tersedia (iOS Safari, atau prompt Chrome/Edge
+  // sudah pernah dipakai sebelumnya) — selalu beri jalan manual sebagai
+  // fallback, supaya tombol tidak pernah jadi dead-click.
+  iosHint.style.display = "block";
+  clearTimeout(iosHintTimer);
+  iosHintTimer = setTimeout(() => { iosHint.style.display = "none"; }, 7000);
 });
 
 document.addEventListener("click", (event) => {
@@ -509,9 +535,7 @@ document.addEventListener("click", (event) => {
   }
 });
 
-window.addEventListener("appinstalled", () => {
-  installBtn.style.display = "none";
-});
+window.addEventListener("appinstalled", markInstalled);
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
