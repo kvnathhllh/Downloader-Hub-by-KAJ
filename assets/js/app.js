@@ -15,6 +15,8 @@ const previewWrapper = document.getElementById("previewWrapper");
 const formatsGrid = document.getElementById("formatsGrid");
 const resultTitle = document.getElementById("resultTitle");
 const mediaAuthor = document.getElementById("mediaAuthor");
+const gateNotice = document.getElementById("gateNotice");
+const gateOpenBtn = document.getElementById("gateOpenBtn");
 
 let isProcessing = false;
 
@@ -110,7 +112,7 @@ async function fetchBlobWithRetry(url, maxAttempts, onAttempt) {
   throw lastError;
 }
 
-async function directDownloadFile(downloadUrl, fileName, button, fileType) {
+async function directDownloadFile(downloadUrl, fileName, button, fileType, thumbnailUrl) {
   const confirmed = confirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`);
   if (!confirmed) return;
 
@@ -137,7 +139,8 @@ async function directDownloadFile(downloadUrl, fileName, button, fileType) {
     }, 2000);
 
     button.innerHTML = "✓ Sudah diunduh, cek folder Download";
-    if (typeof addHistoryEntry === "function") addHistoryEntry(fileName, fileType);
+    if (typeof addHistoryEntry === "function") addHistoryEntry(fileName, fileType, thumbnailUrl, downloadUrl);
+    if (typeof touchLastActive === "function") touchLastActive();
   } catch (error) {
     // Semua percobaan gagal — tetap di halaman yang sama, tidak membuka tab baru
     triggerBackgroundDownload(downloadUrl);
@@ -164,7 +167,8 @@ async function downloadSlideImage(url, index) {
       if (document.body.contains(link)) document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
     }, 2000);
-    if (typeof addHistoryEntry === "function") addHistoryEntry(`Slide ${index}`, "jpg");
+    if (typeof addHistoryEntry === "function") addHistoryEntry(`Slide ${index}`, "jpg", url, url);
+    if (typeof touchLastActive === "function") touchLastActive();
   } catch {
     triggerBackgroundDownload(url);
   }
@@ -172,6 +176,10 @@ async function downloadSlideImage(url, index) {
 
 async function startDownload() {
   if (isProcessing) return;
+  if (typeof isLoggedIn === "function" && !isLoggedIn()) {
+    if (typeof openAuthModal === "function") openAuthModal();
+    return;
+  }
 
   const url = urlInput.value.trim();
   clearError();
@@ -391,52 +399,87 @@ function displayResult(data) {
     previewWrapper.innerHTML = `<div style="color:#9ca3af;font-size:13px;padding:30px;">Pratinjau tidak tersedia</div>`;
   }
 
-  let hasHD = false;
-  let hasStandard = false;
-  let hasAudio = false;
-  let hasPhoto = false;
+  // Klasifikasikan tiap item (video/audio/foto) dan, khusus video, cari
+  // peringkat resolusinya dari angka yang tersemat (1080, 720, 480, dst).
+  // Ini supaya platform dengan banyak pilihan kualitas (YouTube: 144p-1080p+)
+  // tetap dapat opsi terbaik, bukan sekadar item pertama yang cocok di array.
+  function classifyMediaItem(item) {
+    const quality = String(item.quality || item.resolution || item.type || item.label || "").toLowerCase();
+    const extension = String(item.ext || item.extension || item.format || "").toLowerCase();
+    const combined = `${quality} ${extension}`;
+
+    const isPhoto = ["image", "photo", "jpg", "jpeg", "png", "webp"].some((k) => combined.includes(k));
+    if (isPhoto) return { kind: "photo" };
+
+    const isAudio = ["mp3", "m4a", "audio"].some((k) => combined.includes(k));
+    if (isAudio) return { kind: "audio" };
+
+    // Prioritas 1: angka resolusi eksplisit (720, 1080, dst) — umum di YouTube dkk
+    const numMatch = combined.match(/(\d{3,4})/);
+    if (numMatch) return { kind: "video", rank: parseInt(numMatch[1], 10) };
+
+    // Prioritas 2: label teks tanpa angka (umum di TikTok: "hd" / "sd")
+    if (combined.includes("fhd")) return { kind: "video", rank: 1080 };
+    if (combined.includes("hd")) return { kind: "video", rank: 720 };
+    if (combined.includes("sd") || combined.includes("low")) return { kind: "video", rank: 360 };
+
+    return { kind: "video", rank: 0 };
+  }
+
+  const videoItems = [];
+  const audioItems = [];
+  const photoItems = [];
 
   mediaList.forEach((item) => {
     const downloadUrl = item.url || item.link;
     if (!downloadUrl) return;
 
-    const quality = String(item.quality || item.resolution || item.type || "").toLowerCase();
-    const extension = String(item.ext || item.extension || item.format || "").toLowerCase();
-    const isPhotoItem =
-      quality.includes("image") || quality.includes("photo") ||
-      extension.includes("jpg") || extension.includes("jpeg") || extension.includes("png");
-
-    // Foto yang sudah tampil di carousel slide tidak perlu tombol duplikat di sini
-    if (isPhotoItem && slideImages.length > 1) return;
-
-    let label = "Unduh MP4";
-    let type = "mp4";
-    let className = "btn-option-video";
-
-    if (isPhotoItem) {
-      if (hasPhoto) return;
-      label = "Unduh Foto";
-      type = "jpg";
-      className = "btn-option-photo";
-      hasPhoto = true;
-    } else if (quality.includes("mp3") || extension.includes("mp3") || quality.includes("audio")) {
-      if (hasAudio) return;
-      label = "Unduh MP3";
-      type = "mp3";
-      className = "btn-option-audio";
-      hasAudio = true;
-    } else if (quality.includes("1080") || quality.includes("fhd") || quality.includes("hd")) {
-      if (hasHD) return;
-      label = "Unduh MP4 HD";
-      type = "mp4";
-      hasHD = true;
+    const cls = classifyMediaItem(item);
+    if (cls.kind === "photo") {
+      // Foto yang sudah tampil di carousel slide tidak perlu tombol duplikat di sini
+      if (slideImages.length > 1) return;
+      photoItems.push({ downloadUrl });
+    } else if (cls.kind === "audio") {
+      audioItems.push({ downloadUrl });
     } else {
-      if (hasStandard) return;
-      label = "Unduh MP4";
-      type = "mp4";
-      hasStandard = true;
+      videoItems.push({ downloadUrl, rank: cls.rank });
     }
+  });
 
+  videoItems.sort((a, b) => b.rank - a.rank);
+
+  const options = [];
+
+  if (videoItems.length > 0) {
+    const best = videoItems[0];
+    options.push({
+      downloadUrl: best.downloadUrl,
+      label: best.rank > 0 ? `Unduh MP4 ${best.rank}p` : "Unduh MP4",
+      type: "mp4",
+      className: "btn-option-video",
+    });
+
+    // Kalau ada tingkat kualitas lain yang jelas beda (lebih ringan), tawarkan juga
+    const lighter = videoItems.find((v) => v.rank > 0 && v.rank < best.rank);
+    if (lighter) {
+      options.push({
+        downloadUrl: lighter.downloadUrl,
+        label: `Unduh MP4 ${lighter.rank}p`,
+        type: "mp4",
+        className: "btn-option-video",
+      });
+    }
+  }
+
+  if (audioItems.length > 0) {
+    options.push({ downloadUrl: audioItems[0].downloadUrl, label: "Unduh MP3", type: "mp3", className: "btn-option-audio" });
+  }
+
+  if (photoItems.length > 0) {
+    options.push({ downloadUrl: photoItems[0].downloadUrl, label: "Unduh Foto", type: "jpg", className: "btn-option-photo" });
+  }
+
+  options.forEach(({ downloadUrl, label, type, className }) => {
     const row = document.createElement("div");
     row.className = "option-row";
 
@@ -446,7 +489,7 @@ function displayResult(data) {
     button.onclick = () => {
       const safeTitle = title.replace(/[^a-zA-Z0-9À-ÿ\s_-]/g, "").trim().replace(/\s+/g, "_").substring(0, 80);
       const fileName = `${safeTitle || "DownloaderHub"}.${type}`;
-      directDownloadFile(downloadUrl, fileName, button, type);
+      directDownloadFile(downloadUrl, fileName, button, type, thumbnail);
     };
 
     row.appendChild(button);
@@ -542,3 +585,25 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
+
+// ========================================================
+// GATE AKSES: alat unduh terkunci sampai user Masuk/Daftar.
+// Dipanggil ulang dari auth.js (renderAuthArea) tiap status login berubah.
+// ========================================================
+function applyAccessGate() {
+  const loggedIn = typeof isLoggedIn === "function" && isLoggedIn();
+  urlInput.disabled = !loggedIn;
+  pasteBtn.disabled = !loggedIn;
+  downloadBtn.disabled = !loggedIn;
+  if (gateNotice) gateNotice.style.display = loggedIn ? "none" : "flex";
+}
+
+if (gateOpenBtn) {
+  gateOpenBtn.addEventListener("click", () => {
+    if (typeof openAuthModal === "function") openAuthModal();
+  });
+}
+
+// State awal: terkunci secara default sampai Firebase memastikan status
+// login yang sebenarnya (menghindari alat sempat "kebuka" sesaat).
+applyAccessGate();
