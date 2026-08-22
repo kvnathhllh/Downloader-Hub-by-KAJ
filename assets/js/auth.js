@@ -1,20 +1,34 @@
 // ========================================================
-// PROFIL LOKAL (Masuk/Daftar) & RIWAYAT UNDUHAN
+// AUTENTIKASI — Firebase Authentication (akun cloud sungguhan)
 //
-// PENTING — batasan yang jujur perlu diketahui:
-// Ini BUKAN sistem akun cloud/aman. Tidak ada server di balik ini.
-// Username dan kata sandi (yang di-hash + salt, bukan plain text)
-// serta riwayat unduhan HANYA tersimpan di localStorage browser ini,
-// di perangkat ini saja. Ganti browser/device = akun tidak ikut.
-// Siapa pun yang punya akses ke perangkat ini secara teknis bisa
-// membuka DevTools dan melihat/mengubah data ini. Untuk akun yang
-// benar-benar aman & lintas perangkat, dibutuhkan backend + database
-// sungguhan (mis. Supabase/Firebase Auth atau server custom).
+// Daftar, masuk, reset kata sandi via email, dan sesi login semuanya
+// ditangani server Firebase — bukan lagi disimpan lokal di browser.
+// Riwayat unduhan tetap disimpan lokal per perangkat (localStorage),
+// tapi sekarang dikaitkan ke akun Firebase (UID), bukan username lokal.
 // ========================================================
 
-const AUTH_PROFILES_KEY = "dlhub_profiles_v1";
-const AUTH_SESSION_KEY = "dlhub_session_v1";
-const HISTORY_PREFIX = "dlhub_history_v1_";
+const firebaseConfig = {
+  apiKey: "AIzaSyA45RBG0yg43MZv6tv-TWfgyk-OHcaPKpA",
+  authDomain: "downloader-hub-kaj.firebaseapp.com",
+  projectId: "downloader-hub-kaj",
+  storageBucket: "downloader-hub-kaj.firebasestorage.app",
+  messagingSenderId: "278820096923",
+  appId: "1:278820096923:web:e2b613b6142736a0adaf3e",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Bersihkan sisa data sistem lokal versi lama (sebelum pindah ke Firebase)
+try {
+  localStorage.removeItem("dlhub_profiles_v1");
+  localStorage.removeItem("dlhub_session_v1");
+} catch {}
+
+const LAST_ACTIVE_KEY = "dlhub_last_active_v1";
+const HAS_REGISTERED_KEY = "dlhub_has_account_v1";
+const INACTIVITY_LIMIT_MS = 7 * 24 * 60 * 60 * 1000; // 7 hari
+const HISTORY_PREFIX = "dlhub_history_v2_"; // v2: dikaitkan ke UID Firebase
 const HISTORY_LIMIT = 50;
 
 const authArea = document.getElementById("authArea");
@@ -22,16 +36,17 @@ const modalOverlay = document.getElementById("modalOverlay");
 const modalContent = document.getElementById("modalContent");
 const modalCloseBtn = document.getElementById("modalCloseBtn");
 
+let currentUser = null;
+let hasCheckedInitialAuth = false;
+
 function openModal(html) {
   modalContent.innerHTML = html;
   modalOverlay.classList.add("open");
 }
-
 function closeModal() {
   modalOverlay.classList.remove("open");
   modalContent.innerHTML = "";
 }
-
 modalCloseBtn.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", (e) => {
   if (e.target === modalOverlay) closeModal();
@@ -46,54 +61,44 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-function getProfiles() {
-  try {
-    return JSON.parse(localStorage.getItem(AUTH_PROFILES_KEY)) || {};
-  } catch {
-    return {};
-  }
+function isLoggedIn() {
+  return !!currentUser;
 }
 
-function saveProfiles(profiles) {
+function touchLastActive() {
+  try { localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now())); } catch {}
+}
+
+function isInactiveTooLong() {
   try {
-    localStorage.setItem(AUTH_PROFILES_KEY, JSON.stringify(profiles));
-    return true;
+    const raw = localStorage.getItem(LAST_ACTIVE_KEY);
+    if (!raw) return false;
+    return Date.now() - Number(raw) > INACTIVITY_LIMIT_MS;
   } catch {
     return false;
   }
 }
 
-function getSession() {
-  try {
-    return localStorage.getItem(AUTH_SESSION_KEY);
-  } catch {
-    return null;
-  }
+function markHasRegisteredBefore() {
+  try { localStorage.setItem(HAS_REGISTERED_KEY, "1"); } catch {}
+}
+function hasRegisteredBefore() {
+  try { return !!localStorage.getItem(HAS_REGISTERED_KEY); } catch { return false; }
 }
 
-function setSession(username) {
-  try {
-    if (username) localStorage.setItem(AUTH_SESSION_KEY, username);
-    else localStorage.removeItem(AUTH_SESSION_KEY);
-  } catch {
-    // Diamkan — kalau localStorage gagal, sesi cukup hidup sampai reload
-  }
-}
-
-function bufferToHex(buffer) {
-  return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function randomSalt() {
-  const arr = crypto.getRandomValues(new Uint8Array(16));
-  return bufferToHex(arr.buffer);
-}
-
-async function hashPassword(password, saltHex) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(saltHex + ":" + password);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return bufferToHex(digest);
+function translateFirebaseError(code) {
+  const map = {
+    "auth/email-already-in-use": "Email ini sudah terdaftar. Coba menu Masuk, atau pakai email lain.",
+    "auth/invalid-email": "Format email tidak valid.",
+    "auth/weak-password": "Kata sandi terlalu lemah (minimal 6 karakter).",
+    "auth/user-not-found": "Akun dengan email ini tidak ditemukan.",
+    "auth/wrong-password": "Kata sandi salah.",
+    "auth/invalid-credential": "Email atau kata sandi salah.",
+    "auth/missing-password": "Kata sandi wajib diisi.",
+    "auth/too-many-requests": "Terlalu banyak percobaan. Coba lagi beberapa saat lagi.",
+    "auth/network-request-failed": "Gagal terhubung. Cek koneksi internet Anda.",
+  };
+  return map[code] || "Terjadi kesalahan. Coba lagi.";
 }
 
 function scorePassword(pw) {
@@ -132,16 +137,22 @@ function renderAuthForm(tab) {
       <button type="button" class="auth-tab ${tab === "register" ? "active" : ""}" data-tab="register">Daftar</button>
     </div>
     <form id="loginForm" class="auth-form" style="${tab === "login" ? "" : "display:none;"}">
-      <label for="loginIdentifier">Email / Username</label>
-      <input type="text" id="loginIdentifier" autocomplete="username" maxlength="60" required>
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" autocomplete="email" maxlength="120" required>
       <label for="loginPassword">Kata Sandi</label>
       <input type="password" id="loginPassword" autocomplete="current-password" maxlength="128" required>
+      <label class="auth-checkbox">
+        <input type="checkbox" id="loginRemember" checked>
+        <span>Ingat saya di perangkat ini</span>
+      </label>
+      <button type="button" id="forgotPasswordBtn" class="auth-link-btn">Lupa sandi?</button>
+      <div id="forgotPasswordNote" class="auth-note" style="display:none;"></div>
       <div id="loginError" class="auth-error"></div>
       <button type="submit" class="btn btn-download" style="width:100%;margin-top:16px;">Masuk</button>
     </form>
     <form id="registerForm" class="auth-form" style="${tab === "register" ? "" : "display:none;"}">
-      <label for="registerIdentifier">Email / Username</label>
-      <input type="text" id="registerIdentifier" autocomplete="username" maxlength="60" required>
+      <label for="registerEmail">Email</label>
+      <input type="email" id="registerEmail" autocomplete="email" maxlength="120" required>
       <label for="registerPassword">Kata Sandi</label>
       <input type="password" id="registerPassword" autocomplete="new-password" maxlength="128" required minlength="8">
       <div class="strength-meter"><div id="strengthBar" class="strength-bar"></div></div>
@@ -149,7 +160,7 @@ function renderAuthForm(tab) {
       <label for="registerPasswordConfirm">Ulangi Kata Sandi</label>
       <input type="password" id="registerPasswordConfirm" autocomplete="new-password" maxlength="128" required>
       <div id="registerError" class="auth-error"></div>
-      <p class="auth-note">Akun ini tersimpan lokal di perangkat/browser ini saja (bukan akun cloud) — dipakai untuk personalisasi & menyimpan riwayat unduhan.</p>
+      <p class="auth-note">Akun ini akun cloud (Firebase) — bisa dipakai masuk dari perangkat lain, dan kata sandi bisa direset lewat email kalau lupa.</p>
       <button type="submit" class="btn btn-download" style="width:100%;margin-top:6px;">Daftar</button>
     </form>
   `;
@@ -167,9 +178,9 @@ function wireAuthForm() {
       const isLogin = tab.dataset.tab === "login";
       loginForm.style.display = isLogin ? "" : "none";
       registerForm.style.display = isLogin ? "none" : "";
-      // Bersihkan pesan error lama dari tab satunya biar tidak nyangkut
       document.getElementById("loginError").style.display = "none";
       document.getElementById("registerError").style.display = "none";
+      document.getElementById("forgotPasswordNote").style.display = "none";
       (isLogin ? loginForm : registerForm).querySelector("input").focus();
     });
   });
@@ -189,34 +200,51 @@ function wireAuthForm() {
     strengthLabel.textContent = `Kekuatan kata sandi: ${result.label}`;
   });
 
+  const forgotBtn = document.getElementById("forgotPasswordBtn");
+  const forgotNote = document.getElementById("forgotPasswordNote");
+  forgotBtn.addEventListener("click", async () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    if (!email) {
+      forgotNote.textContent = 'Isi dulu email di atas, baru tap "Lupa sandi?".';
+      forgotNote.style.display = "block";
+      return;
+    }
+    const original = forgotBtn.textContent;
+    forgotBtn.disabled = true;
+    forgotBtn.textContent = "Mengirim...";
+    try {
+      await auth.sendPasswordResetEmail(email);
+      forgotNote.textContent = `Link reset kata sandi sudah dikirim ke ${email}. Cek inbox (atau folder spam).`;
+      forgotNote.style.display = "block";
+    } catch (err) {
+      console.error("Firebase Auth error:", err.code, err.message);
+      forgotNote.textContent = translateFirebaseError(err.code);
+      forgotNote.style.display = "block";
+    } finally {
+      forgotBtn.disabled = false;
+      forgotBtn.textContent = original;
+    }
+  });
+
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const errorBox = document.getElementById("loginError");
     const submitBtn = loginForm.querySelector('button[type="submit"]');
     errorBox.style.display = "none";
-    const identifier = document.getElementById("loginIdentifier").value.trim().toLowerCase();
+    const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
+    const remember = document.getElementById("loginRemember").checked;
 
     submitBtn.disabled = true;
     try {
-      const profiles = getProfiles();
-      const profile = profiles[identifier];
-      if (!profile) {
-        errorBox.textContent = "Akun tidak ditemukan di perangkat ini.";
-        errorBox.style.display = "block";
-        return;
-      }
-      const hash = await hashPassword(password, profile.salt);
-      if (hash !== profile.hash) {
-        errorBox.textContent = "Email/username atau kata sandi salah.";
-        errorBox.style.display = "block";
-        return;
-      }
-      setSession(identifier);
+      await auth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
+      await auth.signInWithEmailAndPassword(email, password);
+      markHasRegisteredBefore();
+      touchLastActive();
       closeModal();
-      renderAuthArea();
-    } catch {
-      errorBox.textContent = "Gagal memproses. Pastikan situs diakses lewat HTTPS.";
+    } catch (err) {
+      console.error("Firebase Auth error:", err.code, err.message);
+      errorBox.textContent = translateFirebaseError(err.code);
       errorBox.style.display = "block";
     } finally {
       submitBtn.disabled = false;
@@ -227,15 +255,10 @@ function wireAuthForm() {
     e.preventDefault();
     const errorBox = document.getElementById("registerError");
     errorBox.style.display = "none";
-    const identifier = document.getElementById("registerIdentifier").value.trim().toLowerCase();
+    const email = document.getElementById("registerEmail").value.trim();
     const password = document.getElementById("registerPassword").value;
     const confirmPw = document.getElementById("registerPasswordConfirm").value;
 
-    if (identifier.length < 3) {
-      errorBox.textContent = "Email/username minimal 3 karakter.";
-      errorBox.style.display = "block";
-      return;
-    }
     if (password.length < 8) {
       errorBox.textContent = "Kata sandi minimal 8 karakter.";
       errorBox.style.display = "block";
@@ -250,27 +273,14 @@ function wireAuthForm() {
     const submitBtn = registerForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     try {
-      const profiles = getProfiles();
-      if (profiles[identifier]) {
-        errorBox.textContent = "Email/username ini sudah terdaftar di perangkat ini.";
-        errorBox.style.display = "block";
-        return;
-      }
-
-      const salt = randomSalt();
-      const hash = await hashPassword(password, salt);
-      profiles[identifier] = { salt, hash, createdAt: Date.now() };
-
-      if (!saveProfiles(profiles)) {
-        errorBox.textContent = "Gagal menyimpan akun di perangkat ini.";
-        errorBox.style.display = "block";
-        return;
-      }
-      setSession(identifier);
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      await auth.createUserWithEmailAndPassword(email, password);
+      markHasRegisteredBefore();
+      touchLastActive();
       closeModal();
-      renderAuthArea();
-    } catch {
-      errorBox.textContent = "Gagal membuat akun. Pastikan situs diakses lewat HTTPS.";
+    } catch (err) {
+      console.error("Firebase Auth error:", err.code, err.message);
+      errorBox.textContent = translateFirebaseError(err.code);
       errorBox.style.display = "block";
     } finally {
       submitBtn.disabled = false;
@@ -279,31 +289,28 @@ function wireAuthForm() {
 }
 
 function openAuthModal(tab) {
-  openModal(renderAuthForm(tab || "login"));
+  openModal(renderAuthForm(tab || (hasRegisteredBefore() ? "login" : "register")));
   wireAuthForm();
   const firstInput = modalContent.querySelector("input");
   if (firstInput) firstInput.focus();
 }
 
-function getHistory(username) {
+function getHistory(uid) {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_PREFIX + username)) || [];
+    return JSON.parse(localStorage.getItem(HISTORY_PREFIX + uid)) || [];
   } catch {
     return [];
   }
 }
 
-function addHistoryEntry(title, type) {
-  const username = getSession();
-  if (!username) return;
+function addHistoryEntry(title, type, thumbnail, url) {
+  if (!currentUser) return;
   try {
-    const history = getHistory(username);
-    history.unshift({ title, type, time: Date.now() });
+    const history = getHistory(currentUser.uid);
+    history.unshift({ title, type, time: Date.now(), thumbnail: thumbnail || null, url: url || null });
     if (history.length > HISTORY_LIMIT) history.length = HISTORY_LIMIT;
-    localStorage.setItem(HISTORY_PREFIX + username, JSON.stringify(history));
-  } catch {
-    // Riwayat gagal tersimpan — tidak fatal, unduhan tetap jalan
-  }
+    localStorage.setItem(HISTORY_PREFIX + currentUser.uid, JSON.stringify(history));
+  } catch {}
 }
 
 function formatRelativeTime(ts) {
@@ -322,19 +329,30 @@ function badgeColor(type) {
 }
 
 function renderHistoryModal() {
-  const username = getSession();
-  const history = username ? getHistory(username) : [];
+  const history = currentUser ? getHistory(currentUser.uid) : [];
 
   const items = history.length
-    ? history.map((h) => `
-        <div class="history-item">
-          <div>
-            <div class="history-item-title">${escapeHtml(h.title)}</div>
-            <div class="history-item-meta">${formatRelativeTime(h.time)}</div>
+    ? history.map((h, idx) => {
+        const canPlay = (h.type === "mp4" || h.type === "mp3") && h.url;
+        const fallbackIcon = h.type === "mp3" ? "🎵" : h.type === "jpg" ? "🖼️" : "🎬";
+        const thumbHtml = h.thumbnail
+          ? `<img src="${escapeHtml(h.thumbnail)}" alt="" class="history-thumb-img" loading="lazy">`
+          : fallbackIcon;
+        return `
+          <div class="history-item">
+            <div class="history-thumb">${thumbHtml}</div>
+            <div class="history-item-body">
+              <div class="history-item-title">${escapeHtml(h.title)}</div>
+              <div class="history-item-meta">
+                <span>${formatRelativeTime(h.time)}</span>
+                <span class="history-item-badge" style="background:${badgeColor(h.type)}">${escapeHtml(String(h.type).toUpperCase())}</span>
+              </div>
+            </div>
+            ${canPlay ? `<button class="history-play-btn" type="button" data-idx="${idx}">▶</button>` : ""}
           </div>
-          <span class="history-item-badge" style="background:${badgeColor(h.type)}">${escapeHtml(String(h.type).toUpperCase())}</span>
-        </div>
-      `).join("")
+          ${canPlay ? `<div class="history-player" id="historyPlayer${idx}"></div>` : ""}
+        `;
+      }).join("")
     : `<div class="history-empty">Belum ada riwayat unduhan.</div>`;
 
   openModal(`
@@ -343,39 +361,120 @@ function renderHistoryModal() {
     ${history.length ? `<button id="clearHistoryBtn" class="btn btn-paste" style="width:100%;margin-top:14px;">Hapus Riwayat</button>` : ""}
   `);
 
+  modalContent.querySelectorAll(".history-play-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.idx);
+      const entry = history[idx];
+      const player = document.getElementById("historyPlayer" + idx);
+      if (!player || !entry) return;
+
+      const isOpen = player.style.display === "block";
+      if (isOpen) {
+        player.style.display = "none";
+        player.innerHTML = "";
+        btn.textContent = "▶";
+        return;
+      }
+
+      player.innerHTML = "";
+      const mediaEl = document.createElement(entry.type === "mp3" ? "audio" : "video");
+      mediaEl.controls = true;
+      mediaEl.src = entry.url;
+      mediaEl.style.width = "100%";
+      mediaEl.style.display = "block";
+      if (entry.type !== "mp3") mediaEl.style.maxHeight = "220px";
+      mediaEl.onerror = () => {
+        player.innerHTML = `<div class="history-player-error">Link media ini sudah kedaluwarsa — unduh ulang dari tautan aslinya untuk mendapat link baru.</div>`;
+      };
+      player.appendChild(mediaEl);
+      player.style.display = "block";
+      btn.textContent = "❚❚";
+      mediaEl.play().catch(() => {});
+    });
+  });
+
   const clearBtn = document.getElementById("clearHistoryBtn");
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
       const confirmed = confirm("Hapus semua riwayat unduhan di perangkat ini?");
       if (!confirmed) return;
-      try { localStorage.removeItem(HISTORY_PREFIX + username); } catch {}
+      try { localStorage.removeItem(HISTORY_PREFIX + currentUser.uid); } catch {}
       renderHistoryModal();
     });
   }
 }
 
 function renderAuthArea() {
-  const username = getSession();
-
-  if (!username) {
+  if (!currentUser) {
     authArea.innerHTML = `<button id="loginOpenBtn" class="btn-auth" type="button">Masuk</button>`;
-    document.getElementById("loginOpenBtn").addEventListener("click", () => openAuthModal("login"));
-    return;
+    document.getElementById("loginOpenBtn").addEventListener("click", () => openAuthModal());
+  } else {
+    const displayName = currentUser.email.split("@")[0];
+    authArea.innerHTML = `
+      <div class="user-chip">
+        <button id="userMenuBtn" class="user-name" type="button">👤 ${escapeHtml(displayName)} ▾</button>
+        <div id="userMenu" class="user-menu">
+          <button id="historyOpenBtn" type="button">📜 Riwayat</button>
+          <button id="logoutBtn" type="button">🚪 Keluar</button>
+        </div>
+      </div>
+    `;
+    const menuBtn = document.getElementById("userMenuBtn");
+    const menu = document.getElementById("userMenu");
+    menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      menu.classList.toggle("open");
+    });
+    document.getElementById("historyOpenBtn").addEventListener("click", () => {
+      menu.classList.remove("open");
+      renderHistoryModal();
+    });
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      menu.classList.remove("open");
+      auth.signOut();
+    });
   }
-
-  const displayName = username.includes("@") ? username.split("@")[0] : username;
-  authArea.innerHTML = `
-    <div class="user-chip">
-      <span class="user-name">👤 ${escapeHtml(displayName)}</span>
-      <button id="historyOpenBtn" type="button">Riwayat</button>
-      <button id="logoutBtn" type="button">Keluar</button>
-    </div>
-  `;
-  document.getElementById("historyOpenBtn").addEventListener("click", renderHistoryModal);
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    setSession(null);
-    renderAuthArea();
-  });
+  if (typeof applyAccessGate === "function") applyAccessGate();
 }
 
-renderAuthArea();
+// Tutup dropdown akun kalau klik di luar area itu, atau tekan Escape
+document.addEventListener("click", (e) => {
+  const menu = document.getElementById("userMenu");
+  if (menu && menu.classList.contains("open") && !menu.contains(e.target) && e.target.id !== "userMenuBtn") {
+    menu.classList.remove("open");
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  const menu = document.getElementById("userMenu");
+  if (menu) menu.classList.remove("open");
+});
+
+// Sumber kebenaran tunggal untuk status login: setiap kali Firebase
+// mendeteksi perubahan (masuk, keluar, atau sesi tersimpan ditemukan
+// saat halaman dibuka), UI diperbarui dari sini.
+auth.onAuthStateChanged((user) => {
+  currentUser = user;
+
+  if (user) {
+    if (isInactiveTooLong()) {
+      // Tidak aktif lebih dari 7 hari — paksa keluar, minta masuk ulang
+      auth.signOut();
+      return; // onAuthStateChanged akan terpanggil lagi dengan user = null
+    }
+    touchLastActive();
+  }
+
+  renderAuthArea();
+
+  if (!hasCheckedInitialAuth) {
+    hasCheckedInitialAuth = true;
+    if (!user) openAuthModal();
+  }
+});
+
+// Perbarui "terakhir aktif" tiap kali tab ini dipakai lagi, supaya sesi
+// tidak kedaluwarsa selama masih dibuka dalam 7 hari terakhir
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && currentUser) touchLastActive();
+});
