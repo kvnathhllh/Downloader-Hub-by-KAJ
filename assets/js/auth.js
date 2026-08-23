@@ -44,6 +44,11 @@ function openModal(html) {
   modalOverlay.classList.add("open");
 }
 function closeModal() {
+  // Bersihkan blob URL video/audio riwayat yang mungkin masih aktif,
+  // supaya tidak ada kebocoran memori tiap kali modal dibuka-tutup
+  modalContent.querySelectorAll(".history-player[data-blob-url]").forEach((p) => {
+    URL.revokeObjectURL(p.dataset.blobUrl);
+  });
   modalOverlay.classList.remove("open");
   modalContent.innerHTML = "";
 }
@@ -362,7 +367,7 @@ function renderHistoryModal() {
   `);
 
   modalContent.querySelectorAll(".history-play-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const idx = Number(btn.dataset.idx);
       const entry = history[idx];
       const player = document.getElementById("historyPlayer" + idx);
@@ -371,25 +376,42 @@ function renderHistoryModal() {
       const isOpen = player.style.display === "block";
       if (isOpen) {
         player.style.display = "none";
+        if (player.dataset.blobUrl) {
+          URL.revokeObjectURL(player.dataset.blobUrl);
+          delete player.dataset.blobUrl;
+        }
         player.innerHTML = "";
         btn.textContent = "▶";
         return;
       }
 
-      player.innerHTML = "";
-      const mediaEl = document.createElement(entry.type === "mp3" ? "audio" : "video");
-      mediaEl.controls = true;
-      mediaEl.src = entry.url;
-      mediaEl.style.width = "100%";
-      mediaEl.style.display = "block";
-      if (entry.type !== "mp3") mediaEl.style.maxHeight = "220px";
-      mediaEl.onerror = () => {
-        player.innerHTML = `<div class="history-player-error">Link media ini sudah kedaluwarsa — unduh ulang dari tautan aslinya untuk mendapat link baru.</div>`;
-      };
-      player.appendChild(mediaEl);
+      player.innerHTML = `<div class="history-player-error">⏳ Memuat...</div>`;
       player.style.display = "block";
       btn.textContent = "❚❚";
-      mediaEl.play().catch(() => {});
+
+      try {
+        // Streaming langsung dari URL CDN asli sering diblokir proteksi anti-hotlink
+        // platform sumber. Jalan yang sama seperti download (fetch lalu jadikan blob)
+        // sudah terbukti berhasil, jadi dipakai juga di sini untuk pemutaran.
+        const blob = typeof fetchBlobWithRetry === "function"
+          ? await fetchBlobWithRetry(entry.url, 2)
+          : await fetch(entry.url).then((r) => { if (!r.ok) throw new Error("fail"); return r.blob(); });
+        const blobUrl = URL.createObjectURL(blob);
+        player.dataset.blobUrl = blobUrl;
+
+        player.innerHTML = "";
+        const mediaEl = document.createElement(entry.type === "mp3" ? "audio" : "video");
+        mediaEl.controls = true;
+        mediaEl.src = blobUrl;
+        mediaEl.style.width = "100%";
+        mediaEl.style.display = "block";
+        if (entry.type !== "mp3") mediaEl.style.maxHeight = "220px";
+        player.appendChild(mediaEl);
+        mediaEl.play().catch(() => {});
+      } catch {
+        player.innerHTML = `<div class="history-player-error">Link media ini sudah kedaluwarsa — unduh ulang dari tautan aslinya untuk mendapat link baru.</div>`;
+        btn.textContent = "▶";
+      }
     });
   });
 
