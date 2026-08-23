@@ -105,7 +105,7 @@ async function fetchBlobWithRetry(url, maxAttempts, onAttempt) {
     } catch (err) {
       lastError = err;
       if (attempt < maxAttempts) {
-        await new Promise((r) => setTimeout(r, 600 * attempt));
+        await new Promise((r) => setTimeout(r, 400 * attempt));
       }
     }
   }
@@ -174,6 +174,26 @@ async function downloadSlideImage(url, index) {
   }
 }
 
+// Cache respons API sesaat: URL yang sama dicari ulang jadi instan tanpa
+// nunggu server lagi. Kedaluwarsa 5 menit supaya link CDN di dalamnya
+// (yang biasanya time-limited) tidak kepakai basi.
+const API_CACHE_TTL_MS = 5 * 60 * 1000;
+const apiResponseCache = new Map();
+
+function getCachedResult(key) {
+  const entry = apiResponseCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.time > API_CACHE_TTL_MS) {
+    apiResponseCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedResult(key, data) {
+  apiResponseCache.set(key, { data, time: Date.now() });
+}
+
 async function startDownload() {
   if (isProcessing) return;
   if (typeof isLoggedIn === "function" && !isLoggedIn()) {
@@ -197,6 +217,12 @@ async function startDownload() {
     return;
   }
 
+  const cached = getCachedResult(url);
+  if (cached) {
+    displayResult(cached);
+    return;
+  }
+
   setLoading(true, "Sedang mengekstrak media...");
 
   try {
@@ -210,6 +236,7 @@ async function startDownload() {
       throw new Error(data.message || "Media tidak ditemukan atau tautan tidak didukung.");
     }
 
+    setCachedResult(url, payload);
     displayResult(payload);
   } catch (error) {
     console.error("API Error:", error);
@@ -446,40 +473,76 @@ function displayResult(data) {
     }
   });
 
-  videoItems.sort((a, b) => b.rank - a.rank);
+  // Urutkan dari resolusi terendah ke tertinggi (sesuai permintaan), dan
+  // buang duplikat resolusi yang persis sama supaya tidak ada tombol kembar
+  videoItems.sort((a, b) => a.rank - b.rank);
+  const uniqueVideoItems = [];
+  const seenRanks = new Set();
+  videoItems.forEach((v) => {
+    if (seenRanks.has(v.rank)) return;
+    seenRanks.add(v.rank);
+    uniqueVideoItems.push(v);
+  });
 
-  const options = [];
+  // Video: kalau ada lebih dari 1 kualitas, tampilkan sebagai grup pilihan
+  // kompak (seperti daftar resolusi YouTube/situs downloader profesional),
+  // bukan tombol besar bertumpuk satu-satu. Kalau cuma 1 opsi, tetap tombol
+  // penuh biasa seperti sebelumnya — supaya kasus sederhana (mis. TikTok
+  // dengan 1 kualitas) tidak berubah tampilannya.
+  if (uniqueVideoItems.length > 1) {
+    const pickerWrap = document.createElement("div");
+    pickerWrap.className = "quality-picker";
 
-  if (videoItems.length > 0) {
-    const best = videoItems[0];
-    options.push({
-      downloadUrl: best.downloadUrl,
-      label: best.rank > 0 ? `Unduh MP4 ${best.rank}p` : "Unduh MP4",
-      type: "mp4",
-      className: "btn-option-video",
+    const pickerLabel = document.createElement("div");
+    pickerLabel.className = "quality-picker-label";
+    pickerLabel.textContent = `PILIH KUALITAS VIDEO (${uniqueVideoItems.length})`;
+    pickerWrap.appendChild(pickerLabel);
+
+    const pillsWrap = document.createElement("div");
+    pillsWrap.className = "quality-pills";
+    const highestRank = uniqueVideoItems[uniqueVideoItems.length - 1].rank;
+
+    uniqueVideoItems.forEach((v) => {
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "quality-pill" + (v.rank > 0 && v.rank === highestRank ? " best" : "");
+      pill.textContent = v.rank > 0 ? `${v.rank}p` : "MP4";
+      pill.onclick = () => {
+        const safeTitle = title.replace(/[^a-zA-Z0-9À-ÿ\s_-]/g, "").trim().replace(/\s+/g, "_").substring(0, 80);
+        const suffix = v.rank > 0 ? `_${v.rank}p` : "";
+        const fileName = `${safeTitle || "DownloaderHub"}${suffix}.mp4`;
+        directDownloadFile(v.downloadUrl, fileName, pill, "mp4", thumbnail);
+      };
+      pillsWrap.appendChild(pill);
     });
 
-    // Kalau ada tingkat kualitas lain yang jelas beda (lebih ringan), tawarkan juga
-    const lighter = videoItems.find((v) => v.rank > 0 && v.rank < best.rank);
-    if (lighter) {
-      options.push({
-        downloadUrl: lighter.downloadUrl,
-        label: `Unduh MP4 ${lighter.rank}p`,
-        type: "mp4",
-        className: "btn-option-video",
-      });
-    }
+    pickerWrap.appendChild(pillsWrap);
+    formatsGrid.appendChild(pickerWrap);
+  } else if (uniqueVideoItems.length === 1) {
+    const only = uniqueVideoItems[0];
+    const row = document.createElement("div");
+    row.className = "option-row";
+    const button = document.createElement("button");
+    button.className = "btn-option btn-option-video";
+    button.innerHTML = only.rank > 0 ? `Unduh MP4 ${only.rank}p` : "Unduh MP4";
+    button.onclick = () => {
+      const safeTitle = title.replace(/[^a-zA-Z0-9À-ÿ\s_-]/g, "").trim().replace(/\s+/g, "_").substring(0, 80);
+      directDownloadFile(only.downloadUrl, `${safeTitle || "DownloaderHub"}.mp4`, button, "mp4", thumbnail);
+    };
+    row.appendChild(button);
+    formatsGrid.appendChild(row);
   }
 
+  // Audio dan foto tetap tombol penuh biasa (biasanya cuma 1 opsi masing-masing)
+  const simpleOptions = [];
   if (audioItems.length > 0) {
-    options.push({ downloadUrl: audioItems[0].downloadUrl, label: "Unduh MP3", type: "mp3", className: "btn-option-audio" });
+    simpleOptions.push({ downloadUrl: audioItems[0].downloadUrl, label: "Unduh MP3", type: "mp3", className: "btn-option-audio" });
   }
-
   if (photoItems.length > 0) {
-    options.push({ downloadUrl: photoItems[0].downloadUrl, label: "Unduh Foto", type: "jpg", className: "btn-option-photo" });
+    simpleOptions.push({ downloadUrl: photoItems[0].downloadUrl, label: "Unduh Foto", type: "jpg", className: "btn-option-photo" });
   }
 
-  options.forEach(({ downloadUrl, label, type, className }) => {
+  simpleOptions.forEach(({ downloadUrl, label, type, className }) => {
     const row = document.createElement("div");
     row.className = "option-row";
 
