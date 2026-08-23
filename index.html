@@ -16,6 +16,8 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.nexray.eu.cc">
+  <link rel="dns-prefetch" href="https://api.nexray.eu.cc">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
@@ -49,6 +51,11 @@
       <span class="eyebrow">Alat unduh media serbaguna</span>
       <h1>Satu tautan.<br><em>Semua format.</em></h1>
       <p>Tempel tautan video, foto, atau audio dari platform pilihan Anda, lalu unduh dalam format yang Anda butuhkan.</p>
+      <div class="trust-strip">
+        <span>🔒 Aman</span>
+        <span>⚡ Cepat</span>
+        <span>🚫 Tanpa Iklan</span>
+      </div>
 
       <div class="downloader-card">
         <div id="gateNotice" class="gate-notice">
@@ -87,6 +94,11 @@
         <div id="statusBox" class="status-box">
           <div class="spinner"></div>
           <div id="statusText" class="status-text">Sedang mengekstrak media...</div>
+          <div class="skeleton-preview">
+            <div class="skeleton-block skeleton-thumb"></div>
+            <div class="skeleton-block skeleton-line" style="width:65%"></div>
+            <div class="skeleton-block skeleton-line" style="width:40%"></div>
+          </div>
         </div>
 
         <div id="errorBox" class="error-box"></div>
