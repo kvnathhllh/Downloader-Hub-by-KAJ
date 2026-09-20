@@ -99,6 +99,9 @@ body::after {
 
 /* Header */
 header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   padding: 18px 0;
   display: flex;
   align-items: center;
@@ -106,6 +109,9 @@ header {
   gap: 12px;
   border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
+  background: rgba(11, 13, 16, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .logo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -260,6 +266,12 @@ header {
 .spinner {
   width: 24px; height: 24px; margin: 0 auto 14px; border: 2px solid var(--line);
   border-top-color: var(--signal); border-radius: 50%; animation: spin 0.7s infinite linear;
+}
+
+.btn-spinner {
+  display: inline-block; width: 13px; height: 13px; margin-right: 7px;
+  vertical-align: -2px; border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff; border-radius: 50%; animation: spin 0.7s infinite linear;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -570,46 +582,7 @@ footer a:hover { text-decoration: underline; }
 }
 .user-menu button:hover { background: var(--panel-raised); }
 
-/* Gate akses: kotak pengingat wajib daftar/masuk sebelum bisa unduh */
-.gate-notice {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-  padding: 12px 14px;
-  border: 1px solid rgba(47, 111, 237, 0.35);
-  border-radius: var(--radius-sm);
-  background: rgba(47, 111, 237, 0.1);
-  color: #cddcfb;
-  font-size: 13px;
-}
-
 .input-box input:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.auth-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  font-size: 12.5px;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-.auth-checkbox input { width: 15px; height: 15px; accent-color: var(--signal); cursor: pointer; }
-
-.auth-link-btn {
-  align-self: flex-end;
-  margin-top: 10px;
-  border: 0;
-  background: transparent;
-  color: var(--signal);
-  font-size: 12px;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
 
 /* Modal (login/daftar & riwayat) */
 .modal-overlay {
@@ -690,19 +663,6 @@ footer a:hover { text-decoration: underline; }
 }
 .modal-close:hover { color: white; }
 
-.auth-tabs {
-  display: flex; gap: 6px; margin-bottom: 20px;
-  padding: 4px; border-radius: 100px;
-  background: var(--ink); border: 1px solid var(--line);
-}
-
-.auth-tab {
-  flex: 1; padding: 8px; border: 0; border-radius: 100px;
-  background: transparent; color: var(--text-muted);
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer;
-}
-.auth-tab.active { background: var(--signal); color: white; }
-
 .auth-form { display: flex; flex-direction: column; }
 .auth-form label {
   font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.5px;
@@ -720,10 +680,6 @@ footer a:hover { text-decoration: underline; }
   border-left: 3px solid var(--danger); border-radius: 4px;
   background: rgba(240, 83, 61, 0.08); color: #ffb3a3; font-size: 12px;
 }
-
-.strength-meter { margin-top: 8px; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
-.strength-bar { height: 100%; width: 0%; border-radius: 4px; transition: all 0.25s ease; background: var(--danger); }
-.strength-label { margin-top: 5px; font-size: 11px; color: var(--text-subtle); }
 
 .auth-note {
   margin-top: 14px; padding: 10px 11px; border-radius: 8px;
@@ -763,12 +719,17 @@ footer a:hover { text-decoration: underline; }
   font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: white;
 }
 
-.history-play-btn {
+.history-item-actions { flex-shrink: 0; display: flex; gap: 6px; }
+
+.history-play-btn,
+.history-download-btn {
   flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
   border: 1px solid var(--line); background: var(--ink); color: white;
   cursor: pointer; font-size: 12px; transition: border-color 0.2s ease;
 }
-.history-play-btn:hover { border-color: var(--line-strong); }
+.history-play-btn:hover,
+.history-download-btn:hover { border-color: var(--line-strong); }
+.history-download-btn:hover { border-color: var(--signal); }
 
 .history-player {
   display: none;
