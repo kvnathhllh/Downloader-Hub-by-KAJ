@@ -15,8 +15,6 @@ const previewWrapper = document.getElementById("previewWrapper");
 const formatsGrid = document.getElementById("formatsGrid");
 const resultTitle = document.getElementById("resultTitle");
 const mediaAuthor = document.getElementById("mediaAuthor");
-const gateNotice = document.getElementById("gateNotice");
-const gateOpenBtn = document.getElementById("gateOpenBtn");
 
 let isProcessing = false;
 
@@ -113,16 +111,17 @@ async function fetchBlobWithRetry(url, maxAttempts, onAttempt) {
 }
 
 async function directDownloadFile(downloadUrl, fileName, button, fileType, thumbnailUrl) {
+  if (typeof requireUsername === "function" && !requireUsername()) return;
   const confirmed = confirm(`Apakah Anda yakin ingin mengunduh file ${fileType.toUpperCase()} ini?`);
   if (!confirmed) return;
 
   const originalText = button.innerHTML;
   button.disabled = true;
-  button.innerHTML = "⏳ Sedang mengunduh...";
+  button.innerHTML = '<span class="btn-spinner"></span>Sedang mengunduh...';
 
   try {
     const blob = await fetchBlobWithRetry(downloadUrl, 3, (attempt, max) => {
-      if (attempt > 1) button.innerHTML = `⏳ Mencoba lagi (${attempt}/${max})...`;
+      if (attempt > 1) button.innerHTML = `<span class="btn-spinner"></span>Mencoba lagi (${attempt}/${max})...`;
     });
 
     const blobUrl = URL.createObjectURL(blob);
@@ -196,10 +195,6 @@ function setCachedResult(key, data) {
 
 async function startDownload() {
   if (isProcessing) return;
-  if (typeof isLoggedIn === "function" && !isLoggedIn()) {
-    if (typeof openAuthModal === "function") openAuthModal();
-    return;
-  }
 
   const url = urlInput.value.trim();
   clearError();
@@ -354,9 +349,10 @@ function renderCarousel(images) {
   updateCurrentLabel();
 
   currentBtn.onclick = async () => {
+    if (typeof requireUsername === "function" && !requireUsername()) return;
     const original = currentBtn.innerHTML;
     currentBtn.disabled = true;
-    currentBtn.innerHTML = "⏳ Mengunduh...";
+    currentBtn.innerHTML = '<span class="btn-spinner"></span>Mengunduh...';
     await downloadSlideImage(images[current], current + 1);
     currentBtn.innerHTML = "Slide sudah diunduh";
     setTimeout(() => {
@@ -375,6 +371,7 @@ function renderCarousel(images) {
   allBtn.className = "btn-option btn-option-video";
   allBtn.innerHTML = `Unduh Semua Slide (${images.length})`;
   allBtn.onclick = async () => {
+    if (typeof requireUsername === "function" && !requireUsername()) return;
     const confirmed = confirm(`Unduh ${images.length} gambar slide ini?`);
     if (!confirmed) return;
     allBtn.disabled = true;
@@ -648,25 +645,3 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
-
-// ========================================================
-// GATE AKSES: alat unduh terkunci sampai user Masuk/Daftar.
-// Dipanggil ulang dari auth.js (renderAuthArea) tiap status login berubah.
-// ========================================================
-function applyAccessGate() {
-  const loggedIn = typeof isLoggedIn === "function" && isLoggedIn();
-  urlInput.disabled = !loggedIn;
-  pasteBtn.disabled = !loggedIn;
-  downloadBtn.disabled = !loggedIn;
-  if (gateNotice) gateNotice.style.display = loggedIn ? "none" : "flex";
-}
-
-if (gateOpenBtn) {
-  gateOpenBtn.addEventListener("click", () => {
-    if (typeof openAuthModal === "function") openAuthModal();
-  });
-}
-
-// State awal: terkunci secara default sampai Firebase memastikan status
-// login yang sebenarnya (menghindari alat sempat "kebuka" sesaat).
-applyAccessGate();
